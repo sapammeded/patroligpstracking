@@ -1,0 +1,1278 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FORM PATROLI PROFESIONAL SECURITY</title>
+<!-- Library JS PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<!-- Font Awesome untuk ikon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* Variabel Warna Tailwind */
+:root {
+  --primary: #0b3d91;
+  --primary-dark: #082a6b;
+  --primary-light: #1e56c9;
+  --secondary: #4f46e5;
+  --secondary-dark: #4338ca;
+  --accent: #10b981;
+  --accent-dark: #059669;
+  --warning: #f59e0b;
+  --warning-dark: #d97706;
+  --danger: #ef4444;
+  --danger-dark: #dc2626;
+  --info: #0ea5e9;
+  --info-dark: #0284c7;
+  --bg-light: #f3f4f6;
+  --text-dark: #1f2937;
+  --text-light: #ffffff;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.card {
+    background-color: var(--text-light);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 1.75rem;
+    color: var(--primary-dark);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-top: 20px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 5px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--text-light);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-accent {
+    background-color: var(--accent);
+    color: var(--text-light);
+    margin-top: 20px;
+}
+
+.btn-accent:hover {
+    background-color: var(--accent-dark);
+}
+
+.btn-danger {
+    background-color: var(--danger);
+    color: var(--text-light);
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-dark);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+input[type="text"], input[type="date"], input[type="time"], select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+#routeStatus {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.status-ok {
+    background-color: #d1fae5; /* green-100 */
+    color: var(--accent-dark);
+}
+
+.status-warning {
+    background-color: #fef3c7; /* yellow-100 */
+    color: var(--warning-dark);
+}
+
+.area-item {
+    background-color: var(--bg-light);
+    border: 1px solid #e5e7eb;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.area-info {
+    flex-grow: 1;
+}
+
+.area-time {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+.area-photo-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    flex-shrink: 0;
+}
+
+.area-actions {
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 5px;
+    transition: color 0.2s;
+}
+
+.delete-btn:hover {
+    color: var(--danger-dark);
+}
+
+/* Toast Notification */
+#toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 30px;
+    font-size: 1rem;
+    box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#toast.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;} 
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {opacity: 1;} 
+    to {opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
+
+/* Tab System Styling */
+#tabs {
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--primary);
+    border-radius: 8px 8px 0 0;
+    margin-bottom: -1px; /* Overlap border */
+    overflow: hidden;
+}
+
+.tab-btn {
+    flex-grow: 1;
+    padding: 12px 10px;
+    text-align: center;
+    background-color: var(--primary);
+    color: var(--text-light);
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn:hover {
+    background-color: var(--primary-light);
+}
+
+.tab-btn.active {
+    background-color: var(--text-light);
+    color: var(--primary-dark);
+    border-bottom: 3px solid var(--accent);
+}
+
+.tab-content {
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    padding: 20px;
+    background-color: var(--text-light);
+    border-radius: 0 0 12px 12px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Custom styles for Signature Tab */
+#signatureCanvas {
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    /* PENTING: Mencegah scroll saat menggambar di perangkat sentuh */
+    touch-action: none; 
+    display: block;
+    width: 100%;
+    background-color: #f9f9f9;
+}
+
+.signature-container {
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.separator {
+    height: 3px;
+    background-color: #000;
+    margin: 15px 0;
+}
+
+.verification-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent-dark); /* Hijau gelap */
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+/* Profile Photo Preview */
+#photoPreview {
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+</style>
+</head>
+<body>
+
+<div id="loading" class="card" style="text-align: center;">
+    <p>Memuat aplikasi dan memeriksa izin...</p>
+    <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary);"></i>
+</div>
+
+<div id="permissionModal" class="card hidden">
+    <h2>Izin Diperlukan</h2>
+    <p>Aplikasi ini membutuhkan izin Lokasi (untuk tracking) dan Kamera (untuk upload foto profil dan bukti patroli).</p>
+    <button id="grantPermissionBtn" class="btn btn-primary">Lanjutkan & Berikan Izin</button>
+</div>
+
+<div class="container hidden" id="appUI">
+    <h1>FORM PATROLI PROFESIONAL SECURITY</h1>
+
+    <div id="tabs">
+        <button class="tab-btn active" onclick="switchToTab('formTab')"><i class="fas fa-file-alt"></i> Formulir</button>
+        <button class="tab-btn" onclick="switchToTab('dataTab')"><i class="fas fa-map-marker-alt"></i> Data Lokasi</button>
+        <button class="tab-btn" onclick="switchToTab('signatureTab')"><i class="fas fa-signature"></i> Tanda Tangan</button>
+    </div>
+
+    <!-- TAB FORMULIR (Meta Data & Upload Foto & Tracking) -->
+    <div id="formTab" class="tab-content">
+        <div class="card">
+            <h2>Data Meta Patroli</h2>
+            <div class="form-group">
+                <label for="petugas">Nama Petugas Patroli:</label>
+                <input type="text" id="petugas" placeholder="Cth: Budi Santoso" required>
+            </div>
+            <div class="form-group">
+                <label for="tanggal">Tanggal Patroli:</label>
+                <input type="date" id="tanggal" required>
+            </div>
+            <div class="form-group">
+                <label for="shift">Shift Patroli:</label>
+                <select id="shift" required>
+                    <option value="">Pilih Shift</option>
+                    <option value="Pagi">Pagi (07:00 - 15:00)</option>
+                    <option value="Siang">Siang (15:00 - 23:00)</option>
+                    <option value="Malam">Malam (23:00 - 07:00)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Bagian Foto Profil yang diminta User (Ditempatkan di Tab Formulir) -->
+        <div class="card">
+            <h2>Foto Profil (Cover PDF)</h2>
+            <div class="form-group">
+                <label for="profilePhotoInput">Unggah Foto Profil (Kamera/Galeri HP):</label>
+                <!-- PENTING: capture="camera" akan memicu kamera HP secara default -->
+                <input type="file" id="profilePhotoInput" accept="image/*" capture="camera">
+            </div>
+            <img id="photoPreview" src="" alt="Pratinjau Foto Profil" class="hidden">
+            <p style="font-size: 0.85rem; color: #6b7280; margin-top: 10px;">Foto ini akan menjadi cover PDF.</p>
+        </div>
+        
+        <div class="card">
+            <h2>Tracking Lokasi & Bukti Patroli</h2>
+            <div id="routeStatus" class="status-warning">Tracking Lokasi Belum Dimulai</div>
+            <button id="addNewAreaBtn" class="btn btn-primary"><i class="fas fa-camera"></i> Ambil Bukti & Tambah Lokasi Baru</button>
+            <p style="font-size: 0.85rem; color: var(--danger-dark); margin-top: 10px;">*Tracking GPS harus aktif untuk mendapatkan koordinat yang akurat.</p>
+        </div>
+    </div>
+
+    <!-- TAB DATA LOKASI -->
+    <div id="dataTab" class="tab-content hidden">
+        <div id="areaList">
+            <!-- Lokasi patroli akan dirender di sini -->
+            <p style="text-align: center; color: #6b7280;" id="emptyListMessage">Belum ada lokasi patroli yang ditambahkan.</p>
+        </div>
+        <div class="card" style="margin-top: 20px;">
+            <h2>Opsi Data</h2>
+            <button id="generatePdfBtn" class="btn btn-accent"><i class="fas fa-file-pdf"></i> Generate Laporan PDF</button>
+            <button id="cleanupDataBtn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Bersihkan Semua Data Patroli</button>
+            <p id="cleanupStats" style="font-size: 0.8rem; text-align: center; margin-top: 10px; color: #6b7280;"></p>
+        </div>
+    </div>
+
+    <!-- TAB TANDA TANGAN (Permintaan Baru dari User) -->
+    <div id="signatureTab" class="tab-content hidden">
+        <h2>Tanda Tangan Petugas</h2>
+        <p style="font-size: 0.9rem; color: #6b7280;">Silakan tanda tangan di kotak di bawah ini.</p>
+
+        <div class="signature-container">
+            <!-- Area Timestamp Tanda Tangan -->
+            <p id="signatureTimestamp" style="font-size: 0.85rem; text-align: right; margin-bottom: 5px; color: #6b7280;"></p>
+
+            <!-- Canvas Tanda Tangan -->
+            <canvas id="signatureCanvas" width="560" height="200"></canvas>
+
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="btn btn-primary" onclick="clearSignature()" style="flex: 1;"><i class="fas fa-eraser"></i> Hapus Tanda Tangan</button>
+                <button class="btn btn-accent" onclick="saveSignature()" style="flex: 1;"><i class="fas fa-save"></i> Simpan Tanda Tangan</button>
+            </div>
+        </div>
+
+        <!-- Garis Pemisah Tebal Hitam -->
+        <div class="separator"></div>
+
+        <p id="patrolOfficerName" style="font-weight: bold; text-align: center; margin-bottom: 5px;">[Nama Petugas]</p>
+
+        <!-- Teks Verifikasi Hijau -->
+        <p class="verification-text">Tanda tangan terverifikasi dan tervalidasi by system</p>
+
+    </div>
+
+</div>
+
+<div id="toast"></div>
+
+<!-- Input File Tersembunyi untuk Memicu Kamera Bukti Lokasi -->
+<input type="file" id="areaPhotoInput" accept="image/*" capture="camera" style="display: none;">
+
+
+<script type="module">
+// Global Variables
+let currentPosition = null;
+let watchId = null;
+let isTracking = false;
+const STORAGE_KEY = 'patrol_data_v5'; // Update KEY
+const PHOTO_KEY = 'profilePhotoBase64_v5';
+const SIGNATURE_KEY = 'signatureBase64_v5';
+
+// --- Helper Functions ---
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return; // Tambahkan cek untuk mencegah error
+    toast.textContent = message;
+    toast.className = 'show';
+    setTimeout(function(){ toast.className = toast.className.replace('show', ''); }, 3000);
+}
+
+function getStoredData() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    // Tambahkan 'jamPatroli' ke meta data untuk cover PDF
+    return data ? JSON.parse(data) : { areas: [], meta: { petugas: '', tanggal: '', shift: '', jamPatroli: '' } };
+}
+
+function persistData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    updateCleanupStats();
+}
+
+function persistMeta() {
+    const data = getStoredData();
+    const petugas = document.getElementById('petugas')?.value;
+    const tanggal = document.getElementById('tanggal')?.value;
+    const shift = document.getElementById('shift')?.value;
+
+    if (petugas) data.meta.petugas = petugas;
+    if (tanggal) data.meta.tanggal = tanggal;
+    if (shift) data.meta.shift = shift;
+    
+    // Simpan jam saat tombol "Generate PDF" diklik atau saat meta diubah terakhir kali
+    data.meta.jamPatroli = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+    
+    persistData(data);
+    updateSignatureMeta(data.meta.petugas);
+}
+
+function loadData() {
+    const data = getStoredData();
+    const petugasInput = document.getElementById('petugas');
+    const tanggalInput = document.getElementById('tanggal');
+    const shiftSelect = document.getElementById('shift');
+
+    if (petugasInput) petugasInput.value = data.meta.petugas;
+    if (tanggalInput) tanggalInput.value = data.meta.tanggal;
+    if (shiftSelect) shiftSelect.value = data.meta.shift;
+    
+    // Load Photo Profil
+    const storedPhoto = localStorage.getItem(PHOTO_KEY);
+    const photoPreview = document.getElementById('photoPreview');
+    if (photoPreview) {
+        if (storedPhoto) {
+            photoPreview.src = storedPhoto;
+            photoPreview.classList.remove('hidden');
+        } else {
+            photoPreview.src = '';
+            photoPreview.classList.add('hidden');
+        }
+    }
+
+    // Update Signature meta on load
+    updateSignatureMeta(data.meta.petugas);
+
+    // Tambahkan listener input/change untuk persistMeta
+    document.getElementById('petugas')?.addEventListener('input', persistMeta);
+    document.getElementById('tanggal')?.addEventListener('change', persistMeta);
+    document.getElementById('shift')?.addEventListener('change', persistMeta);
+}
+
+function updateSignatureMeta(petugasName) {
+    const nameElement = document.getElementById('patrolOfficerName');
+    if (nameElement) {
+        nameElement.textContent = petugasName || '[Nama Petugas Belum Diisi]';
+    }
+}
+
+function getCurrentTimeISO() {
+    return new Date().toISOString();
+}
+
+function formatTime(isoString) {
+    const date = new Date(isoString);
+    const dateOptions = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    // Menggunakan regex untuk mengganti '/' dengan '-' agar konsisten dengan format Indonesia yang umum
+    const datePart = date.toLocaleDateString('id-ID', dateOptions).replace(/\//g, '-'); 
+    const timePart = date.toLocaleTimeString('id-ID', timeOptions);
+    return `${datePart} ${timePart}`;
+}
+
+function updateCleanupStats() {
+    const data = getStoredData();
+    const stats = document.getElementById('cleanupStats');
+    if (stats) {
+        stats.textContent = `Saat ini tersimpan ${data.areas.length} lokasi patroli.`;
+    }
+}
+
+function updateRouteStatusUI() {
+    const statusDiv = document.getElementById('routeStatus');
+    const addNewAreaBtn = document.getElementById('addNewAreaBtn');
+    if (statusDiv) {
+        if (isTracking) {
+            statusDiv.textContent = '✅ Tracking Lokasi Aktif';
+            statusDiv.className = 'status-ok';
+            if (addNewAreaBtn) addNewAreaBtn.disabled = false;
+        } else {
+            statusDiv.textContent = '⚠️ Tracking Lokasi Tidak Aktif (Perlu Izin)';
+            statusDiv.className = 'status-warning';
+            if (addNewAreaBtn) addNewAreaBtn.disabled = true;
+        }
+    }
+}
+
+// --- Tab System ---
+
+window.switchToTab = function(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+    const activeTab = document.getElementById(tabId);
+    if (activeTab) {
+        activeTab.classList.remove('hidden');
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    const btnSelector = document.querySelector(`.tab-btn[onclick="switchToTab('${tabId}')"]`);
+    if (btnSelector) {
+        btnSelector.classList.add('active');
+    }
+    
+    // Spesifik untuk tab Tanda Tangan: Update timestamp saat dibuka
+    if (tabId === 'signatureTab') {
+        const timestamp = document.getElementById('signatureTimestamp');
+        if (timestamp) {
+            timestamp.textContent = `Timestamp: ${formatTime(getCurrentTimeISO())}`;
+        }
+        initSignatureCanvas(); // Pastikan canvas diinisialisasi saat tab dibuka
+    }
+}
+
+// --- GPS Tracking & Area Management ---
+
+function startTracking() {
+    if (isTracking) return;
+
+    if ('geolocation' in navigator) {
+        watchId = navigator.geolocation.watchPosition(
+            (position) => {
+                currentPosition = {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude,
+                    accuracy: position.coords.accuracy,
+                    timestamp: getCurrentTimeISO()
+                };
+                isTracking = true;
+                updateRouteStatusUI();
+                // showToast(`GPS Update: Lat ${currentPosition.latitude.toFixed(4)}, Acc ${currentPosition.accuracy.toFixed(1)}m`);
+            },
+            (error) => {
+                console.error("Geolocation error:", error);
+                isTracking = false;
+                updateRouteStatusUI();
+                showToast(`❌ Gagal mendapatkan lokasi: ${error.message}`);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        showToast('❌ Geolocation tidak didukung di browser ini.');
+        updateRouteStatusUI();
+    }
+}
+
+function addNewArea() {
+    if (!currentPosition) {
+        showToast('⚠️ Belum ada koordinat GPS. Pastikan izin lokasi diberikan dan tunggu sebentar.');
+        return;
+    }
+
+    const areaName = prompt("Masukkan Nama Lokasi Patroli (Cth: Pos Satpam Depan):");
+    if (!areaName || areaName.trim() === '') {
+        showToast('Pembatalan: Nama lokasi tidak boleh kosong.');
+        return;
+    }
+
+    // Pemicu input file kamera tersembunyi
+    captureAreaPhoto(areaName.trim());
+}
+
+function captureAreaPhoto(areaName) {
+    const photoInput = document.getElementById('areaPhotoInput');
+    if (!photoInput) {
+        showToast('❌ Elemen input foto tidak ditemukan.');
+        return;
+    }
+
+    // Reset input sebelum digunakan
+    photoInput.value = null;
+
+    // Tambahkan listener untuk menangani file yang diunggah
+    // Gunakan fungsi sekali pakai agar listener tidak menumpuk
+    const handlePhotoChange = (event) => {
+        photoInput.removeEventListener('change', handlePhotoChange);
+        const file = event.target.files[0];
+
+        if (!file) {
+            showToast('Pembatalan: Foto bukti patroli tidak diunggah.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const photoBase64 = e.target.result;
+            
+            // Simpan Data Lokasi setelah foto berhasil diubah ke Base64
+            const data = getStoredData();
+            const newArea = {
+                id: Date.now(),
+                name: areaName,
+                ...currentPosition,
+                time: formatTime(currentPosition.timestamp),
+                photoBase64: photoBase64 // Simpan bukti foto di sini
+            };
+            data.areas.push(newArea);
+            persistData(data);
+            renderAreas();
+            showToast(`✅ Lokasi "${newArea.name}" & Bukti Foto berhasil ditambahkan.`);
+        };
+        reader.onerror = function() {
+            showToast('❌ Gagal membaca file foto bukti patroli.');
+        };
+        reader.readAsDataURL(file);
+    };
+
+    photoInput.addEventListener('change', handlePhotoChange);
+    // Klik input file tersembunyi untuk memicu kamera/galeri
+    photoInput.click();
+}
+
+
+window.deleteArea = function(id) {
+    if (!confirm('Yakin ingin menghapus lokasi ini?')) return;
+    const data = getStoredData();
+    const initialLength = data.areas.length;
+    data.areas = data.areas.filter(area => area.id !== id);
+    if (data.areas.length < initialLength) {
+        persistData(data);
+        renderAreas();
+        showToast('Lokasi berhasil dihapus.');
+    }
+}
+
+function renderAreas() {
+    const list = document.getElementById('areaList');
+    const emptyListMessage = document.getElementById('emptyListMessage'); 
+    const data = getStoredData();
+    
+    if (!list) return;
+
+    list.innerHTML = '';
+    
+    if (data.areas.length === 0) {
+        if (emptyListMessage) {
+            emptyListMessage.style.display = 'block';
+        }
+        return;
+    }
+    
+    if (emptyListMessage) {
+        emptyListMessage.style.display = 'none';
+    }
+
+    // Urutkan data berdasarkan timestamp (ID) terbaru di atas
+    data.areas.sort((a, b) => b.id - a.id); 
+
+    data.areas.forEach(area => {
+        const item = document.createElement('div');
+        item.className = 'area-item';
+        item.innerHTML = `
+            ${area.photoBase64 ? `<img src="${area.photoBase64}" alt="Bukti Foto" class="area-photo-thumb">` : ''}
+            <div class="area-info">
+                <strong>${area.name}</strong>
+                <div class="area-time">
+                    ${area.time} | Lat: ${area.latitude.toFixed(5)}, Lon: ${area.longitude.toFixed(5)}
+                    <br>Akurasi: ${area.accuracy.toFixed(1)}m
+                </div>
+            </div>
+            <div class="area-actions">
+                <button class="delete-btn" onclick="deleteArea(${area.id})"><i class="fas fa-trash-alt"></i></button>
+            </div>
+        `;
+        list.appendChild(item);
+    });
+}
+
+// --- Cleanup ---
+
+function cleanupData() {
+    if (!confirm('PERINGATAN: Ini akan menghapus SEMUA data patroli yang tersimpan. Lanjutkan?')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(PHOTO_KEY);
+    localStorage.removeItem(SIGNATURE_KEY);
+    loadData(); // Reload to reset inputs and UI
+    renderAreas();
+    if (watchId !== null) {
+        // Hentikan tracking jika sedang berjalan
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        isTracking = false;
+        updateRouteStatusUI();
+    }
+    showToast('✅ Semua data patroli, foto, dan tanda tangan berhasil dibersihkan.');
+}
+
+// --- PDF Generation ---
+
+async function generatePDF() {
+    // Pastikan data meta terbaru tersimpan sebelum generate PDF
+    persistMeta(); 
+    const data = getStoredData();
+
+    if (data.areas.length === 0) {
+        showToast('⚠️ Tidak ada lokasi patroli untuk dibuat laporan.');
+        return;
+    }
+    if (!data.meta.petugas || !data.meta.tanggal || !data.meta.shift) {
+        showToast('⚠️ Harap lengkapi Nama Petugas, Tanggal, dan Shift di tab Formulir.');
+        switchToTab('formTab');
+        return;
+    }
+    
+    const signature = localStorage.getItem(SIGNATURE_KEY);
+    if (!signature) {
+        showToast('⚠️ Harap tanda tangan dan simpan di tab Tanda Tangan.');
+        switchToTab('signatureTab');
+        return;
+    }
+
+    const photoBase64 = localStorage.getItem(PHOTO_KEY);
+    if (!photoBase64) {
+        showToast('⚠️ Harap unggah Foto Profil di tab Formulir untuk cover laporan.');
+        switchToTab('formTab');
+        return;
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const currentTime = new Date();
+    const jamPatroliFinal = data.meta.jamPatroli || currentTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const hari = currentTime.toLocaleDateString('id-ID', { weekday: 'long' });
+    const tanggalTahun = new Date(data.meta.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    // --- 1. COVER PAGE (Halaman Sampul) ---
+    const pageMargin = 20;
+    const docWidth = doc.internal.pageSize.getWidth();
+    const docHeight = doc.internal.pageSize.getHeight();
+    let yPos = pageMargin;
+    
+    doc.setFontSize(28);
+    doc.setTextColor(11, 61, 145); // Primary color
+    doc.text("LAPORAN PATROLI HARIAN", docWidth / 2, yPos, { align: 'center' });
+    yPos += 15;
+    
+    // Header Data (Gaya Tabel Sesuai Permintaan User)
+    doc.setFontSize(14);
+    doc.setTextColor(31, 41, 55); 
+    
+    const headerData = [
+        ["Nama Petugas Patroli:", data.meta.petugas],
+        ["Hari, Tgl, Tahun:", `${hari}, ${tanggalTahun}`],
+        ["Shift:", data.meta.shift],
+        ["Jam Laporan Dibuat:", `${jamPatroliFinal} WIB`]
+    ];
+
+    doc.autoTable({
+        startY: yPos,
+        body: headerData,
+        theme: 'plain',
+        styles: { fontSize: 12, cellPadding: 2, overflow: 'linebreak' },
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 } },
+        margin: { top: 10, left: pageMargin, right: pageMargin },
+        didDrawPage: (data) => {
+            yPos = data.cursor.y + 15;
+        }
+    });
+
+    doc.setDrawColor(0, 0, 0); 
+    doc.setLineWidth(0.5);
+    doc.line(pageMargin, yPos - 5, docWidth - pageMargin, yPos - 5);
+    
+    // Foto Profil (Besar di Tengah Sesuai Permintaan User)
+    if (photoBase64) {
+        // Menggunakan 80% lebar dokumen
+        const photoWidth = (docWidth - 2 * pageMargin) * 0.8; 
+        // Menggunakan rasio 4:3
+        const photoHeight = photoWidth * (3 / 4); 
+        const photoX = (docWidth - photoWidth) / 2;
+        const availableHeight = docHeight - yPos - pageMargin - 10; 
+        // Posisikan di tengah vertikal sisa halaman
+        const photoY = yPos + (availableHeight - photoHeight) / 2;
+        
+        try {
+            doc.addImage(photoBase64, 'JPEG', photoX, photoY, photoWidth, photoHeight, '', 'MEDIUM');
+        } catch (e) {
+            console.error("Error adding image to PDF:", e);
+            doc.setFontSize(12);
+            doc.text("Gagal menampilkan foto profil.", docWidth / 2, photoY + (photoHeight / 2), { align: 'center' });
+        }
+        
+        yPos = docHeight - pageMargin - 10;
+    } 
+    
+    // Footer / Cap
+    doc.setFontSize(10);
+    doc.setTextColor(100, 100, 100);
+    doc.text("Dokumen ini dihasilkan secara otomatis oleh Sistem Patroli GPS V5", docWidth / 2, docHeight - pageMargin, { align: 'center' });
+
+    // --- 2. MAIN REPORT PAGE (Halaman Rangkuman Lokasi) ---
+    doc.addPage();
+    yPos = pageMargin;
+
+    doc.setFontSize(18);
+    doc.setTextColor(11, 61, 145);
+    doc.text("Rangkuman Lokasi Patroli", pageMargin, yPos);
+    yPos += 10;
+
+    const tableHeaders = [
+        ["No", "Nama Lokasi", "Waktu", "Koordinat (Lat/Lon)", "Akurasi (m)"]
+    ];
+    // Pastikan data area diurutkan berdasarkan waktu tercepat
+    const sortedAreas = [...data.areas].sort((a, b) => a.id - b.id);
+
+    const tableRows = sortedAreas.map((area, index) => [
+        index + 1,
+        area.name,
+        area.time,
+        `${area.latitude.toFixed(5)} / ${area.longitude.toFixed(5)}`,
+        area.accuracy.toFixed(1)
+    ]);
+    
+    doc.autoTable({
+        startY: yPos,
+        head: tableHeaders,
+        body: tableRows,
+        theme: 'striped',
+        styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+        headStyles: { fillColor: [11, 61, 145], textColor: 255, fontStyle: 'bold' },
+        margin: { top: 10, left: pageMargin, right: pageMargin },
+        didDrawPage: (data) => {
+            // Update yPos setelah tabel rangkuman
+            yPos = data.cursor.y + 10;
+        }
+    });
+
+    // Posisikan Tanda Tangan
+    let finalY = doc.autoTable.previous.finalY + 20;
+
+    // Tambahkan tanda tangan di akhir laporan lokasi
+    if (finalY > docHeight - 150) {
+        doc.addPage();
+        finalY = pageMargin;
+    }
+    
+    // Header Tanda Tangan
+    doc.setFontSize(10);
+    doc.setTextColor(107, 114, 128); 
+    doc.text("Tanda Tangan Petugas", docWidth - pageMargin, finalY, { align: 'right' });
+    finalY += 5;
+    
+    doc.text("Timestamp: " + formatTime(new Date().toISOString()), docWidth - pageMargin, finalY, { align: 'right' });
+    finalY += 5;
+
+    // Tambahkan Tanda Tangan (Gambar Base64)
+    const signatureHeight = 40;
+    const signatureWidth = 80;
+    const signatureX = docWidth - pageMargin - signatureWidth; 
+    
+    try {
+        doc.addImage(signature, 'PNG', signatureX, finalY, signatureWidth, signatureHeight);
+    } catch (e) {
+        console.error("Error adding signature to PDF:", e);
+        doc.setFontSize(10);
+        doc.text("Gagal menampilkan tanda tangan.", signatureX + signatureWidth / 2, finalY + signatureHeight / 2, { align: 'center' });
+    }
+    finalY += signatureHeight;
+    
+    // Garis Pemisah Hitam Tebal (Sesuai Permintaan User)
+    const lineXStart = docWidth - pageMargin - signatureWidth;
+    const lineXEnd = docWidth - pageMargin;
+    doc.setDrawColor(0, 0, 0); 
+    doc.setLineWidth(2); 
+    doc.line(lineXStart, finalY + 5, lineXEnd, finalY + 5);
+    finalY += 15;
+    
+    // Nama Petugas
+    const nameText = data.meta.petugas || '[Nama Petugas]';
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text(nameText, lineXStart + signatureWidth / 2, finalY, { align: 'center' });
+    finalY += 6;
+    
+    // Teks Verifikasi Hijau
+    doc.setFontSize(8);
+    doc.setTextColor(5, 150, 105); 
+    doc.text("Tanda tangan terverifikasi dan tervalidasi by system", lineXStart + signatureWidth / 2, finalY, { align: 'center' });
+
+
+    // --- 3. LAMPIRAN FOTO BUKTI PATROLI (Halaman Lampiran) ---
+    doc.addPage();
+    yPos = pageMargin;
+
+    doc.setFontSize(18);
+    doc.setTextColor(11, 61, 145);
+    doc.text("Lampiran Bukti Foto Patroli", pageMargin, yPos);
+    yPos += 15;
+    
+    const imageContainerWidth = docWidth - 2 * pageMargin;
+    const imageWidth = (imageContainerWidth - 10) / 2; // Dua kolom dengan margin 10px
+    const imageHeight = imageWidth * (3/4); // Rasio 4:3
+    const gap = 10;
+    let col = 0;
+    let rowY = yPos;
+    
+    // Filter hanya area yang memiliki foto
+    const areasWithPhotos = data.areas.filter(area => area.photoBase64);
+
+    areasWithPhotos.forEach((area, index) => {
+        
+        // Cek apakah perlu halaman baru
+        if (rowY + imageHeight + 20 > docHeight - pageMargin) { // +20 untuk caption
+            doc.addPage();
+            rowY = pageMargin;
+            col = 0;
+            doc.setFontSize(18);
+            doc.setTextColor(11, 61, 145);
+            doc.text("Lampiran Bukti Foto Patroli (Lanjutan)", pageMargin, rowY);
+            rowY += 15;
+        }
+
+        const imgX = pageMargin + col * (imageWidth + gap);
+        const imgY = rowY;
+
+        // Gambar Foto
+        try {
+            doc.addImage(area.photoBase64, 'JPEG', imgX, imgY, imageWidth, imageHeight, '', 'MEDIUM');
+        } catch (e) {
+            doc.setFontSize(10);
+            doc.text("Gagal menampilkan foto.", imgX + imageWidth / 2, imgY + imageHeight / 2, { align: 'center' });
+        }
+
+        // Teks Keterangan
+        doc.setFontSize(9);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Lokasi: ${area.name}`, imgX, imgY + imageHeight + 4);
+        doc.text(`Waktu: ${area.time}`, imgX, imgY + imageHeight + 8);
+        
+        // Pindah ke kolom berikutnya
+        col++;
+        if (col >= 2) {
+            col = 0;
+            rowY += imageHeight + 20; // Pindah ke baris baru (+20 karena ada 2 baris caption)
+        }
+    });
+
+    // Simpan PDF
+    const filename = `LaporanPatroli_${data.meta.petugas.replace(/\s/g, '_')}_${data.meta.tanggal}.pdf`;
+    doc.save(filename);
+    showToast('✅ Laporan PDF berhasil dibuat!');
+}
+
+// --- Signature Drawing Logic ---
+
+let signatureCanvas, signatureContext;
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+
+function initSignatureCanvas() {
+    signatureCanvas = document.getElementById('signatureCanvas');
+    if (!signatureCanvas) return;
+    
+    signatureContext = signatureCanvas.getContext('2d');
+    
+    // Mengatur ulang lebar canvas agar responsif terhadap container
+    const containerWidth = signatureCanvas.parentElement.offsetWidth;
+    // Set lebar 100% dan tinggi tetap
+    signatureCanvas.width = containerWidth - 2; // -2 untuk border
+    signatureCanvas.height = 200; 
+
+    signatureContext.lineWidth = 3;
+    signatureContext.lineCap = 'round';
+    signatureContext.strokeStyle = 'black';
+    signatureContext.fillStyle = 'white';
+    // Clear canvas dengan warna putih
+    signatureContext.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+
+    // Hapus listener lama jika ada (untuk mencegah penumpukan)
+    signatureCanvas.removeEventListener('mousedown', startDrawing);
+    signatureCanvas.removeEventListener('mousemove', draw);
+    signatureCanvas.removeEventListener('mouseup', stopDrawing);
+    signatureCanvas.removeEventListener('mouseout', stopDrawing);
+    signatureCanvas.removeEventListener('touchstart', handleTouchStart);
+    signatureCanvas.removeEventListener('touchmove', handleTouchMove);
+    signatureCanvas.removeEventListener('touchend', stopDrawing);
+
+    // Tambahkan listener baru
+    signatureCanvas.addEventListener('mousedown', startDrawing);
+    signatureCanvas.addEventListener('mousemove', draw);
+    signatureCanvas.addEventListener('mouseup', stopDrawing);
+    signatureCanvas.addEventListener('mouseout', stopDrawing);
+    
+    // Listener untuk Touch (PENTING: touch-action: none di CSS sudah menonaktifkan scroll)
+    signatureCanvas.addEventListener('touchstart', handleTouchStart);
+    signatureCanvas.addEventListener('touchmove', handleTouchMove);
+    signatureCanvas.addEventListener('touchend', stopDrawing);
+
+    const storedSignature = localStorage.getItem(SIGNATURE_KEY);
+    if (storedSignature) {
+        const img = new Image();
+        img.onload = function() {
+            // Bersihkan dan gambar ulang dengan tanda tangan yang tersimpan
+            signatureContext.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            signatureContext.drawImage(img, 0, 0, signatureCanvas.width, signatureCanvas.height);
+        };
+        img.src = storedSignature;
+    }
+}
+
+function getCoords(e) {
+    const rect = signatureCanvas.getBoundingClientRect();
+    // Gunakan offsetX/Y jika tersedia (mouse), atau hitung dari touch event
+    const clientX = e.clientX !== undefined ? e.clientX : e.touches?.[0]?.clientX;
+    const clientY = e.clientY !== undefined ? e.clientY : e.touches?.[0]?.clientY;
+    
+    if (clientX === undefined || clientY === undefined) return { x: 0, y: 0 };
+
+    return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+    };
+}
+
+
+function startDrawing(e) {
+    isDrawing = true;
+    const { x, y } = getCoords(e);
+    [lastX, lastY] = [x, y];
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    const { x, y } = getCoords(e);
+
+    signatureContext.beginPath();
+    signatureContext.moveTo(lastX, lastY);
+    signatureContext.lineTo(x, y);
+    signatureContext.stroke();
+    
+    [lastX, lastY] = [x, y];
+}
+
+function stopDrawing() {
+    isDrawing = false;
+}
+
+function handleTouchStart(e) {
+    e.preventDefault(); // Mencegah scroll
+    startDrawing(e.touches[0]);
+}
+
+function handleTouchMove(e) {
+    e.preventDefault(); // Mencegah scroll
+    draw(e.touches[0]);
+}
+
+window.clearSignature = function() {
+    if (!signatureContext || !signatureCanvas) return;
+    // Clear canvas dengan warna putih
+    signatureContext.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height); 
+    localStorage.removeItem(SIGNATURE_KEY);
+    showToast('Tanda tangan dihapus.');
+}
+
+window.saveSignature = function() {
+    if (!signatureCanvas) return;
+
+    // Cek apakah kanvas kosong dengan membuat kanvas blank sementara
+    const blankCanvas = document.createElement('canvas');
+    blankCanvas.width = signatureCanvas.width;
+    blankCanvas.height = signatureCanvas.height;
+    const blankContext = blankCanvas.getContext('2d');
+    blankContext.fillStyle = 'white';
+    blankContext.fillRect(0, 0, blankCanvas.width, blankCanvas.height);
+    
+    const signatureData = signatureCanvas.toDataURL('image/png');
+    
+    if (signatureData === blankCanvas.toDataURL('image/png')) {
+        showToast('⚠️ Kanvas tanda tangan masih kosong. Silakan gambar tanda tangan Anda.');
+        return;
+    }
+
+    localStorage.setItem(SIGNATURE_KEY, signatureData);
+    showToast('✅ Tanda tangan berhasil disimpan.');
+}
+
+// --- Photo Upload Logic ---
+
+function handleProfilePhotoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Image = e.target.result;
+        localStorage.setItem(PHOTO_KEY, base64Image);
+        
+        const photoPreview = document.getElementById('photoPreview');
+        if (photoPreview) {
+            photoPreview.src = base64Image;
+            photoPreview.classList.remove('hidden');
+        }
+        
+        showToast('✅ Foto profil berhasil diunggah dan disimpan.');
+    };
+    reader.onerror = function() {
+        showToast('❌ Gagal membaca file foto profil.');
+    };
+    reader.readAsDataURL(file);
+}
+
+// --- Permission Handling & Initialization ---
+
+function handlePermissionResult(permissionResult) {
+    const loadingDiv = document.getElementById('loading');
+    const permissionModal = document.getElementById('permissionModal');
+    const appUI = document.getElementById('appUI');
+    
+    if (loadingDiv) loadingDiv.classList.add('hidden');
+    
+    if (permissionResult) {
+        if (permissionModal) permissionModal.classList.add('hidden');
+        if (appUI) appUI.classList.remove('hidden');
+        startTracking(); // Panggil startTracking setelah izin diberikan
+    } else {
+        if (permissionModal) permissionModal.classList.remove('hidden');
+    }
+}
+
+function requestPermissions() {
+    const locationPromise = new Promise((resolve) => {
+        if (!navigator.geolocation) { resolve(false); return; }
+        navigator.geolocation.getCurrentPosition(
+            () => resolve(true),
+            (error) => {
+                console.warn('Geolocation denied or failed:', error);
+                resolve(false);
+            },
+            { timeout: 3000 }
+        );
+    });
+
+    const mediaPromise = new Promise((resolve) => {
+        // Coba minta izin kamera (untuk profil dan bukti patroli)
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            resolve(false); 
+            return;
+        }
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            .then(stream => {
+                stream.getTracks().forEach(track => track.stop()); 
+                resolve(true);
+            })
+            .catch(error => {
+                console.warn('Camera permission denied or failed:', error);
+                resolve(false);
+            });
+    });
+
+    Promise.all([locationPromise, mediaPromise]).then(([locationGranted, mediaGranted]) => {
+        if (locationGranted) { 
+            handlePermissionResult(true);
+            showToast(mediaGranted ? '✅ Izin Lokasi & Kamera berhasil diberikan.' : '⚠️ Izin Lokasi diberikan. Izin Kamera akan diminta otomatis saat mengambil foto.');
+        } else {
+            handlePermissionResult(false);
+            const grantBtn = document.getElementById('grantPermissionBtn');
+            if (grantBtn) grantBtn.textContent = 'Izin Ditolak. Coba Lagi.';
+            showToast('❌ Gagal mendapatkan izin Lokasi. Fungsionalitas utama terbatas.');
+        }
+    });
+}
+
+// --- Event Listeners and Initial Load ---
+
+document.getElementById('grantPermissionBtn')?.addEventListener('click', requestPermissions);
+document.getElementById('addNewAreaBtn')?.addEventListener('click', addNewArea);
+document.getElementById('generatePdfBtn')?.addEventListener('click', generatePDF);
+document.getElementById('cleanupDataBtn')?.addEventListener('click', cleanupData);
+
+// Event listener untuk Foto Profil
+document.getElementById('profilePhotoInput')?.addEventListener('change', handleProfilePhotoUpload);
+
+
+window.onload = function() {
+    loadData();
+    switchToTab('formTab'); 
+    renderAreas();
+    updateRouteStatusUI();
+    updateCleanupStats();
+    // initSignatureCanvas akan dipanggil saat switchToTab('signatureTab')
+
+    requestPermissions(); 
+};
+</script>
+</body>
+</html>
