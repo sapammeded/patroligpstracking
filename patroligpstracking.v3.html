@@ -1,0 +1,1661 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FORM PATROLI PROFESIONAL SECURITY</title>
+<!-- Library JS PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<!-- Font Awesome untuk ikon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* Variabel Warna Tailwind */
+:root {
+  --primary: #0b3d91;
+  --primary-dark: #082a6b;
+  --primary-light: #1e56c9;
+  --secondary: #4f46e5;
+  --secondary-dark: #4338ca;
+  --accent: #10b981;
+  --accent-dark: #059669;
+  --warning: #f59e0b;
+  --warning-dark: #d97706;
+  --danger: #ef4444;
+  --danger-dark: #dc2626;
+  --info: #0ea5e9;
+  --info-dark: #0284c7;
+  --success: #10b981;
+  --success-dark: #059669;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f7f7f7;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+/* Header & Tabs */
+header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary);
+}
+
+.tab-nav {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 10px 15px;
+  cursor: pointer;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  transition: all 0.2s;
+  font-weight: 600;
+  border-radius: 8px 8px 0 0;
+  margin: 0 2px;
+}
+
+.tab-btn.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.tab-content {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 0 0 8px 8px;
+  background-color: #fff;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Form Styling */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--primary-dark);
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+/* Area Styling */
+.area-card {
+  border: 1px solid var(--primary-light);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  background-color: #f0f4ff;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.area-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #cce;
+  padding-bottom: 5px;
+}
+
+.area-header h3 {
+  margin: 0;
+  color: var(--primary-dark);
+  font-size: 1.25rem;
+}
+
+.delete-btn {
+  background: var(--danger);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-btn:hover {
+  background: var(--danger-dark);
+}
+
+/* Photo Upload and Gallery */
+.photo-upload-box {
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 10px;
+  background-color: #fff;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.photo-upload-box:hover {
+  border-color: var(--accent);
+  background-color: #f9fffb;
+}
+
+.photo-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.photo-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  cursor: pointer; 
+}
+
+.photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-delete-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(239, 68, 68, 0.8);
+  color: white;
+  border: none;
+  padding: 3px;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 0.75rem;
+  border-radius: 0 0 0 4px;
+  transition: background-color 0.2s;
+  z-index: 10;
+}
+
+.photo-delete-btn:hover {
+  background: var(--danger-dark);
+}
+
+.photo-caption-icon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: rgba(11, 61, 145, 0.7); /* Primary Dark Semi-transparent */
+    color: white;
+    padding: 3px;
+    font-size: 0.65rem;
+    border-radius: 0 4px 0 0;
+    z-index: 10;
+}
+
+/* Global Buttons */
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  border: 1px solid var(--primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  background-color: #eee;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.btn-secondary:hover {
+  background-color: #ddd;
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: white;
+  border: 1px solid var(--accent);
+}
+
+.btn-accent:hover {
+  background-color: var(--accent-dark);
+  border-color: var(--accent-dark);
+}
+
+.btn-danger-light {
+    background-color: #fef2f2;
+    color: var(--danger-dark);
+    border: 1px solid var(--danger-dark);
+}
+
+.btn-danger-light:hover {
+    background-color: #fee2e2;
+}
+
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+/* Toast Notification */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column-reverse; 
+  gap: 10px;
+}
+
+.toast {
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transform: translateX(100%);
+  min-width: 250px;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Modal Styling for Photo Description */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 90%;
+    max-height: 90%;
+    overflow: auto;
+    width: 500px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.modal-content textarea {
+    min-height: 150px;
+    resize: vertical;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+}
+
+/* Footer & Guide */
+footer {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 15px;
+  border-top: 1px solid #ccc;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.guide-content p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.guide-content strong {
+    color: var(--primary-dark);
+}
+
+/* Utility classes */
+.flex { display: flex; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
+.mt-3 { margin-top: 12px; }
+.mt-2 { margin-top: 8px; }
+.text-sm { font-size: 0.875rem; }
+.text-red-600 { color: var(--danger); }
+.text-green-600 { color: var(--success-dark); }
+.text-blue-600 { color: var(--primary); }
+
+.tracking-info {
+    padding: 10px;
+    border: 1px dashed var(--primary-light);
+    border-radius: 6px;
+    background-color: #f5f8ff;
+    margin-top: 10px;
+    /* SEMBUNYIKAN WIDGET TRACKING STATUS DI FORM */
+    display: none; 
+}
+
+.tracking-status-text {
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+/* Splash Screen/Modal Izin */
+#permissionModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    text-align: center;
+    padding: 20px;
+    transition: opacity 0.5s;
+}
+
+#permissionModal h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+#permissionModal p {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+}
+
+.btn-splash {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-splash:hover {
+    background-color: var(--accent-dark);
+}
+
+</style>
+</head>
+<body>
+
+<!-- Splash Screen / Permintaan Izin -->
+<div id="permissionModal">
+    <h1><i class="fas fa-shield-alt"></i> FORM PATROLI SECURITY</h1>
+    <p>Untuk memastikan validitas laporan, kami memerlukan **Izin Lokasi (GPS)** dan **Akses Kamera**. Tekan Lanjut dan berikan izin pada *pop-up* browser.</p>
+    <button class="btn-splash" id="grantPermissionBtn">
+        <i class="fas fa-check-circle"></i> Lanjut & Berikan Izin
+    </button>
+</div>
+
+<!-- Konten Utama Aplikasi (Disembunyikan saat modal izin muncul) -->
+<div id="app" class="hidden">
+  <header>
+    <h1>FORM PATROLI SECURITY</h1>
+    <p>Aplikasi Form Patroli Profesional Security dengan fitur Pelacakan Rute Langsung dan Laporan PDF.</p>
+  </header>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="formTab">Form Patroli</button>
+    <button class="tab-btn" data-tab="configTab">Konfigurasi & Data</button>
+    <button class="tab-btn" data-tab="guideTab" id="helpBtn">Panduan</button>
+  </div>
+
+  <!-- Konten Tab Form Patroli -->
+  <div id="formTab" class="tab-content">
+    <h2>Informasi Dasar</h2>
+    <div class="form-group">
+      <label for="petugas">Nama Petugas / Tim</label>
+      <input type="text" id="petugas" placeholder="Masukkan nama petugas" required>
+    </div>
+    <div class="form-group">
+      <label for="tanggal">Tanggal Patroli</label>
+      <input type="date" id="tanggal" required>
+    </div>
+    
+    <!-- LIVE ROUTE TRACKER FEATURE (WIDGET HIDDEN) -->
+    <h2>Pelacakan Rute Langsung (Live Tracker)</h2>
+    <div class="tracking-info">
+        <p class="text-sm">Fitur ini mencatat rute patroli Anda secara berkelanjutan (tiap 10 detik).</p>
+        <div class="flex gap-2">
+            <button class="btn btn-accent" id="startTrackingBtn">
+                <i class="fas fa-play-circle"></i> Mulai Lacak Rute
+            </button>
+            <button class="btn btn-danger-light" id="stopTrackingBtn" disabled>
+                <i class="fas fa-stop-circle"></i> Stop Lacak Rute
+            </button>
+        </div>
+        <div class="tracking-status-text">
+            Status: <span id="trackingStatus">Tidak Aktif. Tekan Mulai.</span>
+        </div>
+        <p class="text-sm text-blue-600 mt-2">
+            Titik Rute Tercatat: <span id="routePointCount">0</span>
+        </p>
+    </div>
+    <!-- END LIVE ROUTE TRACKER FEATURE -->
+
+    <h2 class="mt-3">Daftar Titik Patroli (Checkpoints)</h2>
+    <div id="areaList">
+      <!-- Area cards akan di-inject di sini oleh JavaScript -->
+    </div>
+    
+    <button class="btn btn-secondary btn-full" id="addNewAreaBtn">
+      <i class="fas fa-plus-circle"></i> Tambah Titik Patroli Baru
+    </button>
+    
+    <hr class="mt-3" style="border-top: 1px solid #ccc;">
+
+    <button class="btn btn-primary btn-full" id="generatePdfBtn">
+      <i class="fas fa-file-pdf"></i> Buat Laporan PDF & Download
+    </button>
+  </div>
+
+  <!-- Konten Tab Konfigurasi & Data -->
+  <div id="configTab" class="tab-content hidden">
+    <h2>Manajemen Data</h2>
+    <p>Di sini Anda dapat melihat status data dan melakukan pembersihan manual.</p>
+
+    <div class="form-group">
+        <label>Total Data Titik Patroli Tersimpan:</label>
+        <p id="totalAreas">0 Area</p>
+    </div>
+
+    <div class="form-group">
+        <label>Data Rute Langsung Tersimpan:</label>
+        <p id="routeCount">0 Titik</p>
+    </div>
+
+    <div class="form-group">
+        <label>Data Terlama Ditemukan:</label>
+        <p id="oldestArea">N/A</p>
+    </div>
+
+    <button class="btn btn-danger btn-full" onclick="manualDeepCleanup()">
+        <i class="fas fa-trash-alt"></i> Bersihkan Data Patroli Lama (3+ Hari)
+    </button>
+  </div>
+
+  <!-- Konten Tab Panduan -->
+  <div id="guideTab" class="tab-content hidden guide-content">
+    <h2>Panduan Penggunaan Form Patroli</h2>
+    <p>Form ini dirancang untuk memudahkan dokumentasi patroli keamanan secara profesional.</p>
+    
+    <h3>Langkah 1: Live Route Tracker (Otomatis)</h3>
+    <p>Fitur pelacakan rute GPS sudah diaktifkan secara otomatis setelah Anda memberikan izin di awal. Anda akan melihat notifikasi singkat setiap 10 detik saat titik rute dicatat.</p>
+    
+    <h3>Langkah 2: Isi Informasi Dasar</h3>
+    <p>Masukkan nama petugas atau tim yang melakukan patroli dan pilih tanggal patroli.</p>
+    
+    <h3>Langkah 3: Tambah dan Isi Titik Patroli (Checkpoints)</h3>
+    <p>Tekan tombol <strong>"Tambah Titik Patroli Baru"</strong>.</p>
+    <ul>
+        <li>Ganti nama area (misalnya: Pos 1, Pintu Gerbang Utama).</li>
+        <li>Tekan tombol **Lacak Lokasi Sekarang** untuk mencatat **lokasi spesifik** saat Anda berada di titik tersebut.</li>
+        <li>Unggah foto bukti patroli menggunakan tombol **"Pilih Foto / Kamera"**. Foto akan **dikompresi otomatis** saat diunggah untuk stabilitas ponsel.</li>
+        <li>**Klik foto** yang sudah diunggah untuk menambahkan **Deskripsi/Keterangan** yang akan muncul di laporan PDF.</li>
+        <li>Pilih Status (Aman/Tidak Aman) dan tambahkan catatan.</li>
+    </ul>
+    
+    <h3>Langkah 4: Buat Laporan</h3>
+    <p>Tekan tombol <strong>"Buat Laporan PDF & Download"</strong>. Laporan akan mencakup Titik Patroli (Checkpoints), Rute Langsung (jika dicatat), Detail Foto + Deskripsi yang rapi dan tanda tangan verifikasi sistem.</p>
+  </div>
+
+  <footer>
+    <p>&copy; 2024 Patroli System - Live Tracker</p>
+  </footer>
+</div>
+
+<!-- Container untuk Toast Notification -->
+<div id="toast-container"></div>
+
+<!-- Modal Deskripsi Foto -->
+<div id="photoDescriptionModal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Tambahkan Deskripsi Foto</h3>
+        <img id="modalPhotoPreview" src="" alt="Photo Preview">
+        <textarea id="modalPhotoDescription" placeholder="Masukkan deskripsi detail foto di sini. (Contoh: Pintu gerbang terkunci gembok, tidak ada aktivitas mencurigakan)"></textarea>
+        <div class="flex justify-between items-center">
+            <button class="btn btn-secondary" onclick="document.getElementById('photoDescriptionModal').style.display='none'">
+                <i class="fas fa-times"></i> Tutup
+            </button>
+            <button class="btn btn-primary" id="saveDescriptionBtn">
+                <i class="fas fa-save"></i> Simpan Deskripsi
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+  // Menggunakan window.jsPDF karena library di-load via UMD
+  const { jsPDF } = window.jspdf;
+
+  // --- GLOBAL STATE & INITIALIZATION ---
+  let patrolData = {}; 
+  let metaData = {}; 
+  let watchId = null; // ID untuk continuous tracking
+  let currentPhotoContext = { areaKey: null, photoIndex: null }; // Untuk modal deskripsi
+  
+  const LOCAL_STORAGE_KEY = 'patrol_security_data';
+  const LOCAL_STORAGE_META_KEY = 'patrol_security_meta';
+  const areaListEl = document.getElementById('areaList');
+
+  // Batas ukuran file mentah: 15 MB
+  const MAX_FILE_SIZE = 15 * 1024 * 1024; 
+  // Resolusi maksimum untuk kompresi (lebar)
+  const MAX_IMAGE_WIDTH = 1000; // Ditingkatkan
+  // Kualitas kompresi JPEG
+  const JPEG_QUALITY = 0.8; 
+  // Default Description
+  const DEFAULT_DESCRIPTION = 'TERKENDALI AMAN KONDUSIF';
+
+
+  // Fungsi untuk menampilkan notifikasi toast (menggantikan window.alert/confirm)
+  function showToast(message) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => {
+        container.removeChild(toast);
+      }, 300);
+    }, 3000);
+  }
+
+  // --- DATA MANAGEMENT ---
+
+  // Memuat data dari Local Storage
+  function loadData() {
+    const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+    const storedMeta = localStorage.getItem(LOCAL_STORAGE_META_KEY);
+    
+    if (storedData) {
+      try {
+        const loadedData = JSON.parse(storedData) || {}; 
+        
+        // Konversi struktur data lama ke baru jika ditemukan (untuk kompatibilitas)
+        for (const key in loadedData) {
+            if (loadedData[key].photos && loadedData[key].photos.length > 0) {
+                loadedData[key].photos = loadedData[key].photos.map(photo => {
+                    if (typeof photo === 'string') {
+                        return { base64: photo, description: "" };
+                    }
+                    if (!photo.description) {
+                        photo.description = "";
+                    }
+                    return photo;
+                });
+            }
+        }
+        patrolData = loadedData;
+
+      } catch(e) {
+        console.error('Data Area Patroli korup:', e);
+        showToast('❌ Data Area Patroli korup, reset data.');
+        patrolData = {};
+      }
+    }
+    
+    if (storedMeta) {
+      try {
+        metaData = JSON.parse(storedMeta) || {};
+        if (!metaData.patrolRoute) {
+            metaData.patrolRoute = [];
+        }
+        document.getElementById('petugas').value = metaData.petugas || '';
+        document.getElementById('tanggal').value = metaData.tanggal || '';
+      } catch(e) {
+        console.error('Data Meta korup:', e);
+        showToast('❌ Data Meta korup, reset data.');
+        metaData = { patrolRoute: [] };
+      }
+    } else {
+        metaData = { patrolRoute: [] };
+    }
+
+    if (Object.keys(patrolData).length === 0) {
+      addNewArea(false); 
+    }
+  }
+
+  // Menyimpan data area ke Local Storage
+  function persistData() {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(patrolData));
+  }
+
+  // Menyimpan data meta (petugas, tanggal, route) ke Local Storage
+  function persistMeta() {
+    metaData.petugas = document.getElementById('petugas').value;
+    metaData.tanggal = document.getElementById('tanggal').value;
+    localStorage.setItem(LOCAL_STORAGE_META_KEY, JSON.stringify(metaData));
+  }
+  
+  // Menambahkan Area Patroli baru
+  function addNewArea(show_toast = true) {
+    const newKey = Date.now().toString(); 
+    const currentLength = Object.keys(patrolData).length;
+
+    patrolData[newKey] = {
+      name: `Area ${currentLength + 1}`,
+      photos: [], // Array of { base64: string, description: string }
+      timestamp: Date.now(),
+      status: 'Aman',
+      notes: '',
+      location: {
+        lat: null,
+        lng: null,
+        time: null,
+        error: null
+      }
+    };
+    persistData();
+    renderAreas();
+    if (show_toast) {
+        showToast('✅ Titik Patroli baru ditambahkan!');
+    }
+    updateCleanupStats();
+  }
+  
+  // Menghapus Area Patroli (Tindakan langsung)
+  function deleteArea(areaKey) {
+    if (patrolData.hasOwnProperty(areaKey)) {
+        delete patrolData[areaKey];
+        persistData();
+        renderAreas();
+        showToast(`🗑️ Titik Patroli berhasil dihapus.`);
+    }
+  }
+
+  // --- GEOLOCATION TRACKING LOGIC (Per Area - One Time Capture) ---
+  function captureLocation(areaKey) {
+    const area = patrolData[areaKey];
+    
+    if (!navigator.geolocation) {
+      area.location.error = 'Browser tidak mendukung Geolocation.';
+      showToast('❌ Gagal: Browser tidak mendukung Geolocation.');
+      persistData();
+      renderAreas();
+      return;
+    }
+    
+    const statusEl = document.getElementById(`locationStatus${areaKey}`);
+    statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari lokasi...';
+
+    navigator.geolocation.getCurrentPosition((position) => {
+      area.location.lat = position.coords.latitude.toFixed(6);
+      area.location.lng = position.coords.longitude.toFixed(6);
+      area.location.time = new Date().toLocaleTimeString('id-ID');
+      area.location.error = null;
+      
+      showToast('📍 Lokasi titik patroli berhasil dicatat!');
+      persistData();
+      renderAreas();
+
+    }, (error) => {
+      area.location.lat = null;
+      area.location.lng = null;
+      area.location.time = null;
+      
+      let errorMessage = 'Gagal melacak lokasi.';
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          errorMessage = '❌ Izin lokasi ditolak oleh pengguna.';
+          break;
+        case error.POSITION_UNAVAILABLE:
+          errorMessage = '❌ Informasi lokasi tidak tersedia.';
+          break;
+        case error.TIMEOUT:
+          errorMessage = '❌ Waktu pelacakan habis (Timeout).';
+          break;
+      }
+      area.location.error = errorMessage;
+      
+      showToast(errorMessage);
+      persistData();
+      renderAreas();
+    }, {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+    });
+  }
+  
+  // --- LIVE ROUTE TRACKING LOGIC (Continuous Route) ---
+
+  function updateRouteStatusUI() {
+    const statusEl = document.getElementById('trackingStatus');
+    const routeCountEl = document.getElementById('routePointCount');
+    const startBtn = document.getElementById('startTrackingBtn');
+    const stopBtn = document.getElementById('stopTrackingBtn');
+
+    if (watchId !== null) {
+        statusEl.innerHTML = '<i class="fas fa-satellite-dish fa-spin"></i> **LIVE TRACKING AKTIF**';
+        statusEl.className = 'text-green-600';
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+    } else {
+        statusEl.innerHTML = 'Tidak Aktif. Tekan Mulai.';
+        statusEl.className = 'text-red-600';
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+    }
+    routeCountEl.textContent = metaData.patrolRoute.length;
+    updateCleanupStats(); // Juga update di tab config
+  }
+
+  function startTracking() {
+    if (watchId !== null) return;
+
+    if (!navigator.geolocation) {
+        showToast('❌ Browser tidak mendukung Geolocation.');
+        return;
+    }
+
+    // Reset Route jika sudah ada rute dari tracking sebelumnya
+    // metaData.patrolRoute = []; 
+    // persistMeta(); 
+
+    const options = {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 9000 
+    };
+
+    watchId = navigator.geolocation.watchPosition((position) => {
+        // Success Handler - Catat Titik
+        const newPoint = {
+            lat: position.coords.latitude.toFixed(6),
+            lng: position.coords.longitude.toFixed(6),
+            time: new Date().toLocaleTimeString('id-ID')
+        };
+        metaData.patrolRoute.push(newPoint);
+        persistMeta();
+        updateRouteStatusUI();
+        showToast(`🛰️ Titik Rute ke-${metaData.patrolRoute.length} dicatat.`);
+
+    }, (error) => {
+        // Error Handler
+        console.error('Live Tracking Error:', error);
+        showToast('⚠️ Gagal mendapatkan posisi saat live tracking.');
+
+    }, options);
+
+    updateRouteStatusUI();
+    showToast('🟢 Live Route Tracking Dimulai secara otomatis!');
+  }
+
+  function stopTracking() {
+    if (watchId === null) return;
+
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+
+    updateRouteStatusUI();
+    showToast('🛑 Live Route Tracking Dihentikan.');
+  }
+
+  // --- UI RENDERING & EVENT HANDLERS ---
+  
+  // Fungsi untuk me-render daftar area patroli
+  function renderAreas() {
+    areaListEl.innerHTML = ''; 
+    const areaKeys = Object.keys(patrolData).sort(); 
+    
+    areaKeys.forEach((areaKey, index) => {
+      const area = patrolData[areaKey];
+      const location = area.location;
+      
+      let statusText;
+      let statusClass;
+
+      // Status Geolocation
+      if (location && location.lat && location.lng) {
+          statusText = `Lat: ${location.lat}, Lng: ${location.lng} (Pukul ${location.time})`;
+          statusClass = 'text-green-600';
+      } else if (location && location.error) {
+          statusText = location.error;
+          statusClass = 'text-red-600';
+      } else {
+          statusText = 'Lokasi Checkpoint belum dicatat.';
+          statusClass = '';
+      }
+      
+      // HTML untuk satu Area Card
+      const areaHtml = `
+        <div class="area-card" data-key="${areaKey}">
+          <div class="area-header">
+            <h3>Titik ${index + 1}: <span id="areaNameDisplay${areaKey}">${area.name || `Titik ${index + 1}`}</span></h3>
+            <button class="delete-btn" data-action="deleteArea" data-key="${areaKey}">
+              Hapus Titik
+            </button>
+          </div>
+
+          <div class="form-group">
+            <input 
+              type="text" 
+              placeholder="Nama Titik (cth: Pintu Gerbang Utama)" 
+              value="${area.name || ''}"
+              data-action="updateAreaName"
+              data-key="${areaKey}"
+              oninput="handleAreaUpdate(this)"
+              required
+            >
+          </div>
+          
+          <!-- GEOLOCATION / TRACKING SECTION (One Time Capture) -->
+          <div class="form-group">
+            <label>Lokasi GPS Checkpoint</label>
+            <button class="btn btn-accent btn-full mt-2" data-action="trackLocation" data-key="${areaKey}">
+                <i class="fas fa-map-marker-alt"></i> Lacak Lokasi Checkpoint Sekarang
+            </button>
+            <p id="locationStatus${areaKey}" class="text-sm mt-2 ${statusClass}">
+                ${statusText}
+            </p>
+          </div>
+          <!-- END GEOLOCATION SECTION -->
+
+
+          <div class="form-group">
+            <label>Status Keamanan</label>
+            <select 
+              data-action="updateAreaStatus"
+              data-key="${areaKey}"
+              onchange="handleAreaUpdate(this)"
+            >
+              <option value="Aman" ${area.status === 'Aman' ? 'selected' : ''}>Aman</option>
+              <option value="Tidak Aman" ${area.status === 'Tidak Aman' ? 'selected' : ''}>Tidak Aman</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Catatan/Keterangan</label>
+            <textarea 
+              rows="3" 
+              placeholder="Tambahkan catatan detail di sini"
+              data-action="updateAreaNotes"
+              data-key="${areaKey}"
+              oninput="handleAreaUpdate(this)"
+            >${area.notes || ''}</textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Dokumentasi Foto (${area.photos.length} Foto) <small>(Foto dikompresi & klik untuk Deskripsi)</small></label>
+            <!-- File Input yang Dinamis dengan MULTIPLE & CAPTURE -->
+            <label class="photo-upload-box">
+              <input type="file" 
+                     accept="image/*" 
+                     multiple 
+                     capture 
+                     data-action="uploadPhoto"
+                     data-key="${areaKey}"
+                     style="display: none;" 
+              >
+              <i class="fas fa-camera"></i> Pilih Foto Multiple / Kamera
+            </label>
+            
+            <!-- Galeri Foto -->
+            <div class="photo-gallery">
+              ${area.photos.map((photo, photoIndex) => {
+                const hasDescription = photo.description && photo.description.trim() !== "";
+                const icon = hasDescription 
+                    ? '<i class="fas fa-comment-dots"></i> Deskripsi Ada' 
+                    : '<i class="fas fa-comment-slash"></i> Deskripsi Kosong';
+                const iconClass = hasDescription ? 'text-green-300' : 'text-yellow-300';
+
+                return `
+                <div 
+                    class="photo-item" 
+                    data-action="openDescriptionModal"
+                    data-key="${areaKey}" 
+                    data-photo-index="${photoIndex}"
+                    title="Klik untuk tambah/edit deskripsi"
+                >
+                  <img src="${photo.base64}" alt="Area Photo ${photoIndex + 1}">
+                  <div class="photo-caption-icon ${iconClass}">
+                    <i class="fas fa-file-alt"></i>
+                  </div>
+                  <button class="photo-delete-btn" data-action="deletePhoto" data-key="${areaKey}" data-photo-index="${photoIndex}" onclick="event.stopPropagation()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                `
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+      areaListEl.insertAdjacentHTML('beforeend', areaHtml);
+    });
+  }
+
+  // Delegasi Event untuk update input field yang berubah (Nama, Catatan, Status)
+  function handleAreaUpdate(element) {
+    const areaKey = element.dataset.key;
+    const action = element.dataset.action;
+    const value = element.value;
+
+    if (!patrolData.hasOwnProperty(areaKey)) return;
+
+    if (action === 'updateAreaName') {
+        patrolData[areaKey].name = value;
+        // Update display name immediately
+        document.getElementById(`areaNameDisplay${areaKey}`).textContent = value;
+    } else if (action === 'updateAreaStatus') {
+        patrolData[areaKey].status = value;
+    } else if (action === 'updateAreaNotes') {
+        patrolData[areaKey].notes = value;
+    }
+
+    persistData();
+  }
+  
+  // --- IMAGE PROCESSING (RESIZE/COMPRESS) ---
+  /**
+   * Memproses file gambar (foto) untuk di-resize/kompresi sebelum disimpan.
+   * @param {File} file - Objek file gambar.
+   * @returns {Promise<string>} Base64 string dari gambar yang sudah dikompresi.
+   */
+  function processImageFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                let width = img.width;
+                let height = img.height;
+
+                // Tentukan dimensi baru (Resize jika melebihi MAX_IMAGE_WIDTH)
+                if (width > MAX_IMAGE_WIDTH) {
+                    height = height * (MAX_IMAGE_WIDTH / width);
+                    width = MAX_IMAGE_WIDTH;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                // Gambar ulang di canvas
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Konversi canvas ke data URL (dengan kompresi JPEG)
+                try {
+                    // toDataURL mengembalikan image/png jika format tidak dispesifikasi. Kita paksa JPEG
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', JPEG_QUALITY);
+                    resolve(compressedBase64);
+                } catch(err) {
+                    reject('Kompresi Gagal (toDataURL error)');
+                }
+            };
+            img.onerror = () => reject('Image Load Error (Format/Data Tidak Valid)');
+            img.src = e.target.result;
+        };
+        reader.onerror = () => reject('File Read Error');
+        reader.readAsDataURL(file);
+    });
+  }
+
+
+  // Handler untuk mengunggah foto
+  async function handlePhotoUpload(inputElement) {
+    const areaKey = inputElement.dataset.key;
+
+    if (inputElement.files.length === 0 || !patrolData.hasOwnProperty(areaKey)) return;
+
+    const files = Array.from(inputElement.files);
+    let successfulUploads = 0;
+    let failedUploads = 0;
+    
+    showToast(`⏳ Memproses ${files.length} foto... Harap tunggu sebentar.`);
+
+    const promises = files.map(async file => {
+      if (file.size > MAX_FILE_SIZE) {
+        console.warn(`File ${file.name} dilewati (ukuran > 15MB).`);
+        failedUploads++;
+        return; 
+      }
+      
+      try {
+        // Panggil fungsi kompresi/resize
+        const compressedData = await processImageFile(file); 
+        patrolData[areaKey].photos.push({
+            base64: compressedData,
+            description: "" // Tambahkan deskripsi kosong secara default
+        });
+        successfulUploads++;
+      } catch (e) {
+        console.error(`Gagal memproses foto ${file.name}:`, e);
+        failedUploads++;
+      }
+    });
+
+    // Tunggu semua proses selesai
+    await Promise.all(promises);
+    
+    persistData();
+    renderAreas(); 
+
+    if (successfulUploads > 0) {
+        showToast(`✅ ${successfulUploads} foto berhasil diunggah & dikompresi!`);
+    } 
+    if (failedUploads > 0) {
+        showToast(`⚠️ ${failedUploads} foto gagal diunggah/diproses.`);
+    }
+    
+    inputElement.value = ''; // Reset input file
+  }
+
+  // Handler untuk menghapus foto (Tindakan langsung)
+  function deletePhoto(areaKey, photoIndex) {
+    if (patrolData.hasOwnProperty(areaKey)) {
+        patrolData[areaKey].photos.splice(photoIndex, 1);
+        persistData();
+        renderAreas();
+        showToast('🗑️ Foto berhasil dihapus.');
+    }
+  }
+
+  // --- MODAL & DESKRIPSI LOGIC ---
+
+  function openDescriptionModal(areaKey, photoIndex) {
+    const photo = patrolData[areaKey].photos[photoIndex];
+    if (!photo) return;
+
+    // Set context
+    currentPhotoContext = { areaKey, photoIndex };
+
+    // Update Modal UI
+    document.getElementById('modalPhotoPreview').src = photo.base64;
+    document.getElementById('modalPhotoDescription').value = photo.description || '';
+    
+    // Show Modal
+    document.getElementById('photoDescriptionModal').style.display = 'flex';
+  }
+
+  function savePhotoDescription() {
+    const { areaKey, photoIndex } = currentPhotoContext;
+    const description = document.getElementById('modalPhotoDescription').value.trim();
+
+    if (areaKey === null || photoIndex === null) return;
+
+    patrolData[areaKey].photos[photoIndex].description = description;
+
+    persistData();
+    renderAreas(); // Re-render untuk update ikon deskripsi
+
+    document.getElementById('photoDescriptionModal').style.display = 'none';
+    showToast('📝 Deskripsi foto berhasil disimpan!');
+  }
+
+  // --- EVENT DELEGATION FOR ACTIONS ---
+
+  // Event listener utama untuk menangani semua interaksi dinamis
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('[data-action]');
+    if (!target) return;
+
+    const action = target.dataset.action;
+    const areaKey = target.dataset.key;
+    const photoIndex = target.dataset.photoIndex ? parseInt(target.dataset.photoIndex) : null;
+
+
+    if (action === 'deleteArea') {
+        deleteArea(areaKey);
+    } else if (action === 'deletePhoto') {
+        // Event ini ditangani di sini, tetapi tombol delete di foto juga punya event.stopPropagation()
+        deletePhoto(areaKey, photoIndex);
+    } else if (action === 'trackLocation') {
+        captureLocation(areaKey);
+    } else if (action === 'openDescriptionModal') {
+        openDescriptionModal(areaKey, photoIndex);
+    }
+  });
+
+  document.getElementById('saveDescriptionBtn').addEventListener('click', savePhotoDescription);
+
+  // Delegasi event untuk elemen input type=file (upload foto)
+  document.addEventListener('change', (e) => {
+    const target = e.target;
+    // Pengecekan data-action untuk memastikan ini adalah input foto yang ditargetkan
+    if (target.type === 'file' && target.dataset.action === 'uploadPhoto') {
+        handlePhotoUpload(target);
+    }
+  });
+  
+  // --- TAB SYSTEM ---
+  function setupTabSystem() {
+    document.querySelectorAll('.tab-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        switchToTab(button.dataset.tab);
+      });
+    });
+  }
+
+  function switchToTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+    const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+    const activeContent = document.getElementById(tabId);
+    
+    if (activeBtn) activeBtn.classList.add('active');
+    if (activeContent) activeContent.classList.remove('hidden');
+
+    if (tabId === 'configTab') {
+        updateCleanupStats();
+    }
+  }
+
+  // --- CLEANUP & PDF LOGIC ---
+  
+  // Update statistik pembersihan data di tab Konfigurasi
+  function updateCleanupStats() {
+    const areaKeys = Object.keys(patrolData);
+    document.getElementById('totalAreas').textContent = `${areaKeys.length} Titik Patroli`;
+    document.getElementById('routeCount').textContent = `${metaData.patrolRoute.length} Titik`;
+    
+    let oldestDate = 'N/A';
+    if (areaKeys.length > 0) {
+        const oldestKey = areaKeys.reduce((a, b) => (parseInt(a) < parseInt(b) ? a : b));
+        const oldestTimestamp = patrolData[oldestKey].timestamp;
+        
+        if (oldestTimestamp) {
+             const date = new Date(oldestTimestamp);
+             oldestDate = date.toLocaleDateString('id-ID', {
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+             });
+        }
+    }
+    document.getElementById('oldestArea').textContent = oldestDate;
+  }
+
+  // Pembersihan Data Lama Manual (Tindakan langsung)
+  window.manualDeepCleanup = function() {
+    const isConfirmed = prompt('Ketik "BERSIHKAN" untuk konfirmasi membersihkan data patroli yang lebih dari 3 hari. Tindakan ini tidak dapat dibatalkan! Ini akan menghapus Titik Patroli (Checkpoint) dan Rute Langsung (Live Route).');
+    
+    if (isConfirmed !== 'BERSIHKAN') {
+        showToast('Pembersihan data dibatalkan.');
+        return;
+    }
+
+    const threeDaysAgo = Date.now() - (3 * 24 * 60 * 60 * 1000);
+    let deletedAreas = 0;
+    
+    Object.keys(patrolData).forEach(areaKey => {
+      const area = patrolData[areaKey];
+      if ((area.timestamp || 0) < threeDaysAgo) {
+        delete patrolData[areaKey];
+        deletedAreas++;
+      }
+    });
+
+    // Reset rute setelah dibersihkan
+    metaData.patrolRoute = [];
+    
+    // Pastikan minimal ada 1 area tersisa (Area 1) jika semua terhapus
+    if (Object.keys(patrolData).length === 0) {
+        addNewArea(false);
+    }
+    
+    persistData();
+    persistMeta();
+    renderAreas();
+    updateCleanupStats();
+    
+    showToast(`🧹 Berhasil menghapus ${deletedAreas} Titik Patroli lama dan me-reset Rute Langsung!`);
+  }
+
+  // --- PDF GENERATION ---
+  document.getElementById('generatePdfBtn').addEventListener('click', () => {
+    persistMeta(); 
+    const petugas = metaData.petugas || 'Petugas_Anonim';
+    const tanggal = metaData.tanggal || new Date().toISOString().split('T')[0];
+
+    const areaKeys = Object.keys(patrolData).sort();
+    const routeData = metaData.patrolRoute || [];
+
+    if (areaKeys.length === 0 && routeData.length === 0) {
+      showToast('⚠️ Tidak ada data Titik Patroli maupun Rute Langsung untuk dibuat laporan.');
+      return;
+    }
+
+    try {
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      let y = 20;
+      const margin = 15;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      const primaryDarkHex = '#082a6b'; 
+      const blackHex = '#000000'; 
+      const lightGreyHex = '#cccccc';
+      const lineHeight = 4.5; // Baris teks per mm (diperkecil sedikit untuk kerapian)
+      const photoWidth = 100; // Lebar foto (diperbesar dari 50mm)
+      const photoHeight = 75; // Tinggi foto (diperbesar)
+      
+      // Helper untuk cek page break (Pastikan ada ruang untuk item besar, misal foto + deskripsi)
+      const checkPageBreak = (requiredSpace) => {
+          if (y + requiredSpace > pageHeight - 30) { // 30mm buffer di bawah
+              pdf.addPage();
+              y = 20;
+          }
+      };
+
+      // --- HEADER ---
+      pdf.setFontSize(18);
+      pdf.setTextColor(primaryDarkHex);
+      pdf.text('LAPORAN PATROLI KEAMANAN', pageWidth / 2, y, { align: 'center' });
+      y += 10;
+      pdf.setFontSize(10);
+      pdf.setTextColor(blackHex);
+      pdf.text(`Petugas/Tim: ${petugas}`, margin, y);
+      y += 5;
+      pdf.text(`Tanggal: ${tanggal}`, margin, y);
+      y += 10;
+      
+      pdf.setDrawColor(lightGreyHex); 
+      pdf.line(margin, y, pageWidth - margin, y); 
+      y += 5;
+      
+      // --- RINGKASAN RUTE LANGSUNG (LIVE TRACKING) ---
+      if (routeData.length > 0) {
+          pdf.setFontSize(14);
+          pdf.setTextColor(primaryDarkHex);
+          pdf.text('1. DATA PELACAKAN RUTE LANGSUNG', margin, y);
+          y += 8;
+          pdf.setFontSize(10);
+          pdf.setTextColor(blackHex);
+          
+          const startTime = routeData[0]?.time || 'N/A';
+          const endTime = routeData[routeData.length - 1]?.time || 'N/A';
+          
+          let routeSummary = [
+              `Total Titik Rute Dicatat: ${routeData.length} Titik.`,
+              `Waktu Mulai Lacak: ${startTime}`,
+              `Waktu Selesai Lacak: ${endTime}`
+          ];
+          
+          checkPageBreak(routeSummary.length * lineHeight + 5);
+          
+          pdf.text(routeSummary, margin + 5, y);
+          y += routeSummary.length * lineHeight + 5;
+          
+          // Tambahkan tabel data mentah Rute
+          checkPageBreak(60); 
+
+          const routeHeaders = [['No.', 'Latitude', 'Longitude', 'Waktu']];
+          const routeBody = routeData.map((p, i) => [
+              (i + 1).toString(), 
+              p.lat, 
+              p.lng, 
+              p.time
+          ]);
+
+          pdf.autoTable({
+              head: routeHeaders,
+              body: routeBody,
+              startY: y,
+              theme: 'striped',
+              styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
+              headStyles: { fillColor: primaryDarkHex, textColor: 255 },
+              margin: { left: margin, right: margin }
+          });
+          y = pdf.autoTable.previous.finalY + 10;
+      } else {
+          pdf.setFontSize(14);
+          pdf.setTextColor(primaryDarkHex);
+          pdf.text('1. DATA PELACAKAN RUTE LANGSUNG', margin, y);
+          y += 8;
+          pdf.setFontSize(10);
+          pdf.setTextColor(blackHex);
+          pdf.text('Tidak ada data Pelacakan Rute Langsung yang dicatat.', margin + 5, y);
+          y += 10;
+      }
+      
+      // --- DATA TITIK PATROLI (CHECKPOINTS) ---
+      pdf.setFontSize(14);
+      pdf.setTextColor(primaryDarkHex); 
+      pdf.text('2. DATA TITIK PATROLI (CHECKPOINTS)', margin, y);
+      y += 8;
+
+      // Iterasi Area (Checkpoints)
+      areaKeys.forEach((areaKey, index) => {
+        const area = patrolData[areaKey];
+        
+        // Header Area
+        pdf.setFontSize(12);
+        pdf.setTextColor(primaryDarkHex); 
+        pdf.text(`▶ Titik ${index + 1}: ${area.name || 'Titik Tanpa Nama'}`, margin, y);
+        y += 6;
+        
+        pdf.setFontSize(10);
+        pdf.setTextColor(blackHex); 
+
+        // Status & Catatan Area
+        const location = area.location;
+        let locationText;
+        if (location && location.lat && location.lng) {
+            locationText = `Lokasi (GPS Checkpoint): Lat ${location.lat}, Lng ${location.lng} (Pukul ${location.time})`;
+        } else if (location && location.error) {
+            locationText = `Lokasi (GPS Checkpoint): Gagal dicatat. ${location.error}`;
+        } else {
+            locationText = 'Lokasi (GPS Checkpoint): Tidak dicatat.';
+        }
+        
+        // Informasi Area (Status, Lokasi, Catatan)
+        let areaInfo = [
+            `- Status Keamanan: ${area.status}`,
+            `- ${locationText}`
+        ];
+        
+        const notesLines = pdf.splitTextToSize(`- Catatan Area: ${area.notes || 'Tidak ada catatan area.'}`, pageWidth - 2 * margin - 5);
+        
+        // Cek page break sebelum Area Info
+        checkPageBreak(areaInfo.length * lineHeight + notesLines.length * lineHeight + 10);
+        
+        pdf.text(areaInfo, margin + 5, y);
+        y += areaInfo.length * lineHeight;
+        pdf.text(notesLines, margin + 5, y);
+        y += notesLines.length * lineHeight + 5;
+
+
+        // --- FOTO (DASHBOARD) ---
+        pdf.setFontSize(11);
+        pdf.setTextColor(primaryDarkHex);
+        pdf.text(`Dokumentasi Foto (${area.photos.length} Foto):`, margin + 5, y);
+        y += 5;
+
+        pdf.setFontSize(9);
+        pdf.setTextColor(blackHex);
+        
+        const photoIndent = margin + 10; // sedikit indentasi
+        const photoMaxTextWidth = pageWidth - 2 * photoIndent; // Lebar teks di bawah foto
+
+        area.photos.forEach((photo, photoIndex) => {
+            // Deskripsi menggunakan default jika kosong
+            const description = photo.description.trim() || DEFAULT_DESCRIPTION;
+            const descriptionLines = pdf.splitTextToSize(`Deskripsi: ${description}`, photoMaxTextWidth);
+            
+            // Hitung tinggi yang dibutuhkan: Tinggi Foto + Tinggi Teks Deskripsi + Padding
+            const requiredHeight = photoHeight + descriptionLines.length * lineHeight + 10; 
+
+            // Cek Page Break JELAS SEBELUM MENAMBAH FOTO BARU
+            // Jika sisa halaman tidak cukup untuk satu foto penuh, pindah halaman
+            checkPageBreak(requiredHeight + 5); 
+
+            // Tambahkan Foto
+            try {
+                // Gambar foto di tengah halaman (Horizontal)
+                const photoX = (pageWidth / 2) - (photoWidth / 2); 
+                pdf.addImage(photo.base64, 'JPEG', photoX, y, photoWidth, photoHeight, undefined, 'FAST');
+            } catch (e) {
+                console.warn(`Gagal menambahkan foto ke PDF di Titik ${index + 1}, Foto ${photoIndex + 1}:`, e.message);
+                pdf.text('Error: Gagal render foto', photoIndent, y + photoHeight / 2);
+            }
+            
+            // Pindah posisi Y ke bawah setinggi foto
+            y += photoHeight;
+            y += 3; // Sedikit jarak foto ke deskripsi
+            
+            // Tambahkan Deskripsi (Center Aligned)
+            pdf.setFontSize(9);
+            pdf.setTextColor(primaryDarkHex);
+            
+            // Teks deskripsi (dibuat rata tengah)
+            const photoDescriptionX = (pageWidth / 2); // Mulai dari tengah
+            pdf.text(descriptionLines, photoDescriptionX, y, { align: 'center' }); 
+            
+            // Pindah posisi Y ke bawah setinggi teks
+            y += descriptionLines.length * lineHeight;
+            y += 5; // Jarak bawah deskripsi
+            
+            // Garis pemisah antar foto (Opsional, diaktifkan untuk visual)
+            pdf.setDrawColor('#eeeeee');
+            pdf.line(photoIndent, y, pageWidth - photoIndent, y);
+            y += 4;
+        });
+        
+        y += 5; // Margin bawah area
+        
+        pdf.setDrawColor(lightGreyHex); 
+        pdf.line(margin, y, pageWidth - margin, y); 
+        y += 5; // Jarak antar Area
+      });
+      
+      // --- TANDA TANGAN & VERIFIKASI ---
+      checkPageBreak(40); // Pastikan ada ruang untuk Tanda Tangan
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(blackHex);
+      pdf.text('Dibuat Oleh:', pageWidth / 2, y, { align: 'center' });
+      y += 2;
+      pdf.text(tanggal, pageWidth / 2, y, { align: 'center' });
+      y += 15;
+      
+      // Garis Tanda Tangan
+      const nameWidth = pdf.getStringUnitWidth(petugas) * pdf.getFontSize();
+      const lineLength = nameWidth + 10;
+      const lineX = (pageWidth / 2) - (lineLength / 2);
+      
+      pdf.line(lineX, y, lineX + lineLength, y);
+      y += 3;
+
+      // Nama Petugas
+      pdf.setFontSize(12);
+      pdf.text(petugas, pageWidth / 2, y, { align: 'center' });
+      y += 8;
+
+      // Teks Verifikasi
+      pdf.setFontSize(8);
+      pdf.setTextColor(primaryDarkHex);
+      pdf.text('Tanda tangan sudah otomatis terverifikasi dan di validasi by system.', pageWidth / 2, y, { align: 'center' });
+      y += 5;
+
+      // FOOTER
+      if (y > pageHeight - 15) {
+          pdf.addPage();
+          y = 20;
+      }
+      pdf.setFontSize(8);
+      pdf.setTextColor(102, 102, 102); 
+      pdf.text('Laporan dibuat secara otomatis oleh Patroli System.', pageWidth / 2, pageHeight - 10, { align: 'center' });
+
+
+      const filename = `Laporan_Patroli_${petugas}_${tanggal}.pdf`;
+      pdf.save(filename);
+      
+      showToast('✅ PDF berhasil didownload: ' + filename);
+      
+    } catch(e) { 
+      console.error('PDF Generation Error:', e);
+      showToast('❌ Gagal membuat PDF. Cek konsol browser untuk detail error.'); 
+    }
+  });
+
+  // --- PERMISSION AND INIT LOGIC ---
+  
+  // Fungsi untuk meminta izin kamera
+  function requestCameraPermission() {
+      // Mencoba mendapatkan stream video untuk meminta izin kamera
+      return navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+          .then(stream => {
+              stream.getTracks().forEach(track => track.stop()); // Hentikan stream segera
+              return true;
+          })
+          .catch(error => {
+              console.warn("Izin kamera ditolak atau gagal: ", error);
+              return false;
+          });
+  }
+
+  // Fungsi untuk meminta izin lokasi
+  function requestLocationPermission() {
+      return new Promise(resolve => {
+          if (!navigator.geolocation) {
+              console.error("Geolocation not supported.");
+              resolve(false);
+              return;
+          }
+          // Mencoba mendapatkan lokasi saat ini untuk meminta izin
+          navigator.geolocation.getCurrentPosition(
+              () => resolve(true), // Sukses mendapatkan (izin diberikan)
+              (error) => {
+                  console.warn("Izin lokasi ditolak atau gagal: ", error);
+                  resolve(false);
+              },
+              { timeout: 100 } // Timeout cepat, hanya untuk memicu permintaan izin
+          );
+      });
+  }
+
+  // Fungsi untuk mengaktifkan UI utama
+  function enableAppUI() {
+    document.getElementById('permissionModal').style.opacity = '0';
+    setTimeout(() => {
+        document.getElementById('permissionModal').style.display = 'none';
+        document.getElementById('app').classList.remove('hidden');
+        // Mulai tracking setelah izin dipastikan
+        startTracking();
+    }, 500); // Tunggu transisi opacity selesai
+  }
+
+  // Handler tombol Lanjut & Berikan Izin
+  document.getElementById('grantPermissionBtn').addEventListener('click', async () => {
+      showToast('Meminta izin Kamera dan Lokasi...');
+      
+      // Minta kedua izin
+      const cameraGranted = await requestCameraPermission();
+      const locationGranted = await requestLocationPermission();
+
+      if (cameraGranted && locationGranted) {
+          showToast('✅ Semua izin berhasil diberikan. Aplikasi siap digunakan.');
+          enableAppUI();
+      } else if (cameraGranted || locationGranted) {
+          showToast('⚠️ Sebagian izin diberikan. Harap berikan semua izin jika diminta ulang untuk fungsionalitas penuh.');
+          // Tetap lanjutkan, karena user mungkin hanya perlu izin kamera untuk upload foto
+          enableAppUI(); 
+      } else {
+          showToast('❌ Gagal mendapatkan izin Kamera dan Lokasi. Silakan refresh dan coba lagi.');
+          document.getElementById('grantPermissionBtn').textContent = 'Izin Ditolak. Coba Lagi.';
+      }
+  });
+
+
+  // Event listener untuk tombol 'Tambah Lokasi Patroli Baru'
+  document.getElementById('addNewAreaBtn').addEventListener('click', addNewArea);
+  
+  // Event listener untuk Live Tracking (Tombol start/stop di UI Form, meskipun tersembunyi)
+  document.getElementById('startTrackingBtn').addEventListener('click', startTracking);
+  document.getElementById('stopTrackingBtn').addEventListener('click', stopTracking);
+  
+  // Event listener untuk update data meta (Nama Petugas, Tanggal)
+  document.getElementById('petugas').addEventListener('input', persistMeta);
+  document.getElementById('tanggal').addEventListener('change', persistMeta);
+  
+  // Inisialisasi awal saat halaman dimuat
+  window.onload = function() {
+    loadData();
+    setupTabSystem();
+    switchToTab('formTab'); 
+    renderAreas();
+    updateRouteStatusUI();
+    updateCleanupStats();
+    
+    // Tunjukkan modal izin di awal, JANGAN LANGSUNG startTracking
+    // startTracking akan dipanggil setelah user klik Lanjut dan izin diberikan.
+  };
+</script>
+</body>
+</html>
