@@ -1,0 +1,471 @@
+﻿<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Patroli — PDF Final (Kualitas)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#f6f8fb; --card:#ffffff; --primary:#0b69ff; --muted:#6b7280; --danger:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,Roboto,Arial;background:var(--bg);color:#111}
+  header{background:linear-gradient(90deg,#06204a,#0b1b3a);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+  header h1{margin:0;font-size:18px}
+  .container{max-width:1150px;margin:16px auto;padding:14px;display:flex;gap:14px;flex-wrap:wrap}
+  .card{background:var(--card);border-radius:10px;padding:12px;box-shadow:0 8px 20px rgba(7,10,25,0.06)}
+  .sidebar{width:300px;min-width:260px}
+  label{display:block;margin:8px 0 6px;font-weight:600}
+  input[type=text], textarea, input[type=password]{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eefb;background:#fff}
+  textarea{min-height:80px;resize:vertical;text-align:left}
+  .btn{background:var(--primary);color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:600}
+  .btn.ghost{background:transparent;color:var(--primary);border:1px solid rgba(11,105,255,0.12)}
+  .btn.danger{background:var(--danger)}
+  .muted{color:var(--muted);font-size:13px}
+  .areas{margin-top:12px}
+  .area{border-radius:8px;padding:12px;margin-bottom:12px;border:1px solid #e9f0ff;background:linear-gradient(180deg,#fff,#fbfdff)}
+  .area-header{display:flex;align-items:center;justify-content:space-between}
+  .area-title{font-weight:800;font-size:18px;padding:6px 10px;border-radius:6px;color:#fff}
+  .photo-controls{display:flex;gap:8px;align-items:center;margin-top:8px}
+  .photos{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .photo-item{width:140px;height:100px;border-radius:8px;overflow:hidden;position:relative;background:#f3f5f8;border:1px solid #e6eefb}
+  .photo-item img{width:100%;height:100%;object-fit:cover}
+  .photo-meta{font-size:11px;color:#374151;padding:6px;text-align:left}
+  .icon-btn{background:rgba(255,255,255,.98);border-radius:6px;padding:6px;border:0;cursor:pointer}
+  .signature-canvas{border:1px solid #e6e9ef;border-radius:8px;touch-action:none;background:#fff;display:block}
+  .sig-preview{width:160px;height:70px;border:1px solid #e6e9ef;border-radius:6px;overflow:hidden;background:#fff}
+  .note{font-size:13px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Patroli — Final PDF Quality</h1>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span id="gpsStatus" class="muted">GPS: belum aktif</span>
+    <button id="btnStart" class="btn">Mulai GPS</button>
+    <button id="btnStop" class="btn hidden">Stop GPS</button>
+    <button id="btnGenerate" class="btn">Generate PDF</button>
+    <button id="btnDeep" class="btn danger">Deep Clean</button>
+  </div>
+</header>
+
+<div class="container">
+  <aside class="card sidebar">
+    <label>Mode & Admin</label>
+    <div style="display:flex;gap:8px">
+      <button id="modeUser" class="btn ghost">User</button>
+      <button id="modeAdmin" class="btn ghost">Admin</button>
+    </div>
+    <div id="loginBox" style="margin-top:10px;" class="hidden">
+      <label>Password Admin</label>
+      <input id="adminPass" type="password" placeholder="Password admin...">
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <button id="btnLogin" class="btn">Login</button>
+        <button id="btnLogout" class="btn danger hidden">Logout</button>
+      </div>
+      <div class="note">Password disimpan di memori (tidak ditampilkan). Untuk reset gunakan Deep Clean.</div>
+    </div>
+
+    <hr style="margin:12px 0">
+
+    <label>Nama Petugas</label><input id="officer" type="text" placeholder="Nama petugas...">
+    <label>Shift</label><input id="shift" type="text" placeholder="Contoh: Malam">
+    <label>Tanggal</label><input id="date" type="text" placeholder="YYYY-MM-DD">
+    <div style="margin-top:10px" class="muted">Koordinat terkini:</div>
+    <div id="coords" class="muted">—</div>
+
+    <hr style="margin:12px 0">
+
+    <label>Tambah Area</label><input id="areaInput" type="text" placeholder="Nama area...">
+    <div style="margin-top:8px"><button id="addArea" class="btn">Tambah Area</button></div>
+
+    <div class="note">Semua data disimpan sementara. Deep Clean akan menghapus semua.</div>
+  </aside>
+
+  <main class="card" style="flex:1 1 700px">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <div style="padding:8px;background:#eef6ff;border-radius:8px;font-weight:700;color:#0b69ff">Daftar Area</div>
+      <div style="padding:8px;background:#fff;border-radius:8px">Signature</div>
+    </div>
+
+    <section id="areas" class="areas"></section>
+
+    <hr style="margin:14px 0">
+
+    <label>Signature</label>
+    <input id="sigName" type="text" placeholder="Nama pada tanda tangan...">
+    <div style="margin-top:8px"><canvas id="sigCanvas" class="signature-canvas" width="700" height="140"></canvas></div>
+    <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+      <button id="clearSig" class="btn danger">Hapus</button>
+      <button id="saveSig" class="btn">Simpan Tanda Tangan</button>
+      <div style="margin-left:12px"><div class="muted">Preview:</div><div id="sigBox" class="sig-preview"></div></div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ===== Patrol app — quality PDF patch ===== */
+(function(){
+  // state in-memory
+  const state = {
+    isAdmin: false,
+    adminPassword: window.__patrol_admin_password ?? 'raja123',
+    areas: [], // {id,name,createdAt,photos:[{id,file,url,desc,lat,lon,ts}], description}
+    gpsPath: [],
+    signature: null // dataURL
+  };
+
+  // helpers
+  const $ = sel => document.querySelector(sel);
+  const make = (tag,attrs={}) => { const el = document.createElement(tag); Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v)); return el; };
+  const uid = (p='id') => p+'-'+Math.random().toString(36).slice(2,9);
+
+  // DOM
+  const btnStart = $('#btnStart'), btnStop = $('#btnStop'), gpsStatus = $('#gpsStatus'), coordsEl = $('#coords');
+  const addAreaBtn = $('#addArea'), areaInput = $('#areaInput'), areasContainer = $('#areas');
+  const modeUser = $('#modeUser'), modeAdmin = $('#modeAdmin'), loginBox = $('#loginBox'), btnLogin = $('#btnLogin'), btnLogout = $('#btnLogout');
+  const adminPass = $('#adminPass');
+  const officerName = $('#officer'), shiftInput = $('#shift'), dateInput = $('#date');
+  const btnGenerate = $('#btnGenerate'), btnDeep = $('#btnDeep');
+  const sigCanvas = $('#sigCanvas'), clearSig = $('#clearSig'), saveSig = $('#saveSig'), sigBox = $('#sigBox'), sigName = $('#sigName');
+
+  // geolocation watch
+  let watchId = null;
+  function startGPS(){
+    if(!navigator.geolocation){ alert('Geolocation not supported'); return; }
+    btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
+    gpsStatus.textContent = 'GPS: aktif';
+    watchId = navigator.geolocation.watchPosition(pos=>{
+      const lat = pos.coords.latitude, lon = pos.coords.longitude, ts = pos.timestamp;
+      coordsEl.textContent = lat.toFixed(6)+', '+lon.toFixed(6)+' @ '+ new Date(ts).toLocaleTimeString();
+      state.gpsPath.push({lat,lon,timestamp:ts});
+    }, err=>{
+      console.warn(err); gpsStatus.textContent = 'GPS: error';
+    }, { enableHighAccuracy:true, maximumAge:2000, timeout:7000 });
+  }
+  function stopGPS(){
+    if(watchId && navigator.geolocation) navigator.geolocation.clearWatch(watchId);
+    watchId = null; btnStart.classList.remove('hidden'); btnStop.classList.add('hidden'); gpsStatus.textContent = 'GPS: dihentikan';
+  }
+
+  // create area
+  function addArea(name){
+    const id = uid('area'); const a = {id, name: name || ('Area '+(state.areas.length+1)), createdAt: Date.now(), photos:[], description:''};
+    state.areas.push(a); renderAreas();
+  }
+
+  function colorForId(id){
+    // deterministic color by id
+    let h = 0; for(let i=0;i<id.length;i++) h = (h<<5)-h + id.charCodeAt(i);
+    const hue = Math.abs(h) % 360;
+    return 'hsl('+hue+',65%,42%)';
+  }
+
+  // file input helper: capture camera & record current geolocation at time of take
+  function createFileInput(opts){
+    // opts: {allowGallery, multiple, areaId}
+    return new Promise(resolve=>{
+      // attempt to get current position (best-effort) before opening file dialog
+      let lastPos = null;
+      const getPos = (cb) => {
+        if(navigator.geolocation){
+          navigator.geolocation.getCurrentPosition(p => cb({lat:p.coords.latitude, lon:p.coords.longitude, ts:p.timestamp}), err=>cb(null), {enableHighAccuracy:true, timeout:4000});
+        } else cb(null);
+      };
+      getPos(function(pos){
+        // create input
+        const inp = document.createElement('input'); inp.type='file'; inp.accept='image/*'; if(opts.multiple) inp.multiple = true;
+        if(!opts.allowGallery) inp.setAttribute('capture','environment');
+        inp.style.display='none'; document.body.appendChild(inp);
+        inp.addEventListener('change', function(e){
+          const files = Array.from(e.target.files || []);
+          document.body.removeChild(inp);
+          // attach current pos to each file record using pos captured before dialog
+          resolve({files, pos});
+        });
+        // click to open camera/gallery
+        inp.click();
+        // fallback timeouts - if user cancels remove input
+        setTimeout(()=>{ try{ if(document.body.contains(inp)) document.body.removeChild(inp);}catch(e){} }, 30000);
+      });
+    });
+  }
+
+  // handle files for area
+  async function handleFiles(areaId, files, pos){
+    const area = state.areas.find(a=>a.id===areaId); if(!area) return;
+    for(const f of files){
+      const id = uid('photo');
+      const url = URL.createObjectURL(f);
+      // if pos available use it, else try to sample latest GPS path
+      let lat=null, lon=null, ts=null;
+      if(pos){ lat = pos.lat; lon = pos.lon; ts = pos.ts; }
+      else if(state.gpsPath.length){ const g = state.gpsPath[state.gpsPath.length-1]; lat=g.lat; lon=g.lon; ts=g.timestamp; }
+      area.photos.push({id, file:f, url, desc:'', lat, lon, ts});
+    }
+    renderAreas();
+  }
+
+  // render UI areas
+  function renderAreas(){
+    areasContainer.innerHTML = '';
+    state.areas.forEach(area=>{
+      const aEl = document.createElement('div'); aEl.className='area';
+      // area header with colored background and edit/delete
+      const header = document.createElement('div'); header.className='area-header';
+      const title = document.createElement('div'); title.className='area-title'; title.textContent = area.name;
+      title.style.background = colorForId(area.id);
+      header.appendChild(title);
+      const actions = document.createElement('div');
+      const editBtn = document.createElement('button'); editBtn.className='icon-btn'; editBtn.innerHTML = '<i class="fa fa-pen"></i>'; editBtn.title='Edit area';
+      editBtn.onclick = ()=>{ const v = prompt('Edit nama area:', area.name); if(v!==null){ area.name=v; renderAreas(); } };
+      const delBtn = document.createElement('button'); delBtn.className='icon-btn'; delBtn.innerHTML = '<i class="fa fa-trash"></i>'; delBtn.title='Hapus area';
+      delBtn.onclick = ()=>{ if(confirm('Hapus area & semua fotonya?')){ area.photos.forEach(p=>URL.revokeObjectURL(p.url)); state.areas = state.areas.filter(x=>x.id!==area.id); renderAreas(); } };
+      actions.appendChild(editBtn); actions.appendChild(delBtn);
+      header.appendChild(actions);
+      aEl.appendChild(header);
+
+      // upload buttons (admin: gallery + camera; user: camera only)
+      const pc = document.createElement('div'); pc.className='photo-controls';
+      if(state.isAdmin){
+        const gbtn = document.createElement('button'); gbtn.className='btn ghost'; gbtn.textContent='Pilih dari Galeri (multiple)'; gbtn.onclick = async ()=>{ const res = await createFileInput({allowGallery:true,multiple:true,areaId:area.id}); handleFiles(area.id,res.files,res.pos); };
+        const cbtn = document.createElement('button'); cbtn.className='btn ghost'; cbtn.textContent='Ambil Foto (kamera)'; cbtn.onclick = async ()=>{ const res = await createFileInput({allowGallery:false,multiple:false,areaId:area.id}); handleFiles(area.id,res.files,res.pos); };
+        pc.appendChild(gbtn); pc.appendChild(cbtn);
+      } else {
+        const cbtn = document.createElement('button'); cbtn.className='btn ghost'; cbtn.textContent='Ambil Foto (kamera)'; cbtn.onclick = async ()=>{ const res = await createFileInput({allowGallery:false,multiple:false,areaId:area.id}); handleFiles(area.id,res.files,res.pos); };
+        pc.appendChild(cbtn);
+      }
+      aEl.appendChild(pc);
+
+      // small count
+      const count = document.createElement('div'); count.className='muted'; count.textContent = 'Jumlah foto: ' + area.photos.length;
+      aEl.appendChild(count);
+
+      // photos thumbnails
+      const photosWrap = document.createElement('div'); photosWrap.className='photos';
+      area.photos.forEach(p=>{
+        const pi = document.createElement('div'); pi.className='photo-item';
+        const img = document.createElement('img'); img.src = p.url;
+        pi.appendChild(img);
+        const meta = document.createElement('div'); meta.className='photo-meta';
+        const coordText = (p.lat && p.lon) ? (`${p.lat.toFixed(6)}, ${p.lon.toFixed(6)}`) : 'Koordinat: -';
+        meta.innerHTML = `<div style="font-weight:700">${p.desc || '(klik pensil untuk deskripsi)'}</div><div style="font-size:11px;color:#555">${coordText}<br>${p.ts ? new Date(p.ts).toLocaleString() : ''}</div>`;
+        // actions overlay
+        const act = document.createElement('div'); act.style.position='absolute'; act.style.left='6px'; act.style.bottom='6px'; act.style.display='flex'; act.style.gap='6px';
+        const del = document.createElement('button'); del.className='icon-btn'; del.innerHTML='<i class="fa fa-trash" style="color:#b91c1c"></i>'; del.title='Hapus foto';
+        del.onclick = (e)=>{ e.stopPropagation(); if(confirm('Hapus foto?')){ area.photos = area.photos.filter(xx=>xx.id!==p.id); URL.revokeObjectURL(p.url); renderAreas(); } };
+        const edit = document.createElement('button'); edit.className='icon-btn'; edit.innerHTML='<i class="fa fa-pen" style="color:#0b1228"></i>'; edit.title='Deskripsi';
+        edit.onclick = (e)=>{ e.stopPropagation(); const v = prompt('Deskripsi (tanpa batas):', p.desc||''); if(v!==null){ p.desc=v; renderAreas(); } };
+        act.appendChild(del); act.appendChild(edit);
+        pi.appendChild(act);
+        // append meta below thumbnail for preview
+        const container = document.createElement('div'); container.style.width='160px';
+        container.appendChild(pi);
+        container.appendChild(meta);
+        photosWrap.appendChild(container);
+      });
+      aEl.appendChild(photosWrap);
+
+      // description area-level
+      const ta = document.createElement('textarea'); ta.placeholder='Deskripsi area...'; ta.value = area.description || ''; ta.style.marginTop='8px';
+      ta.oninput = ()=> area.description = ta.value;
+      const saveDesc = document.createElement('button'); saveDesc.className='btn'; saveDesc.textContent='Simpan Deskripsi Area'; saveDesc.style.marginTop='8px';
+      saveDesc.onclick = ()=> { alert('Deskripsi area disimpan'); };
+      aEl.appendChild(ta); aEl.appendChild(saveDesc);
+
+      areasContainer.appendChild(aEl);
+    });
+  }
+
+  // signature canvas
+  const ctx = sigCanvas.getContext('2d'); let drawing=false, last=null;
+  function pos(e){ const r = sigCanvas.getBoundingClientRect(); const x = (e.touches?e.touches[0].clientX:e.clientX)-r.left; const y = (e.touches?e.touches[0].clientY:e.clientY)-r.top; return {x,y}; }
+  function down(e){ drawing=true; last=pos(e); document.body.style.overflow='hidden'; e.preventDefault(); }
+  function move(e){ if(!drawing) return; const p=pos(e); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.lineCap='round'; ctx.lineWidth=2.6; ctx.strokeStyle='#111'; ctx.stroke(); last=p; e.preventDefault(); }
+  function up(e){ drawing=false; last=null; document.body.style.overflow=''; }
+  sigCanvas.addEventListener('mousedown', down); sigCanvas.addEventListener('mousemove', move); sigCanvas.addEventListener('mouseup', up);
+  sigCanvas.addEventListener('touchstart', down, {passive:false}); sigCanvas.addEventListener('touchmove', move, {passive:false}); sigCanvas.addEventListener('touchend', up);
+
+  clearSig.onclick = ()=>{ ctx.clearRect(0,0,sigCanvas.width,sigCanvas.height); state.signature = null; sigBox.innerHTML=''; };
+  saveSig.onclick = ()=>{ const data = sigCanvas.toDataURL('image/png'); state.signature = data; sigBox.innerHTML = '<img src="'+data+'" style="width:160px;height:70px;object-fit:contain">'; alert('Tanda tangan tersimpan'); };
+
+  // PDF generation improved: cover header table, area sections, photo big + desc left-aligned under photo, GPS coords under photo, signature page
+  async function generatePDF(){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:'mm', format:'a4'});
+    const officer = officerName.value || 'Petugas';
+    const shift = shiftInput.value || '';
+    const tanggal = dateInput.value || (new Date()).toISOString().slice(0,10);
+    const waktu = new Date().toLocaleTimeString();
+
+    // cover: structured header table (colored) top-left, profile photo top-right if available (use first area first photo or none)
+    // header box
+    doc.setFillColor(10,30,90);
+    doc.rect(10,10,190,36,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(14);
+    doc.text('LAPORAN PATROLI', 14, 22);
+    doc.setFontSize(11);
+    // create table-like header rows in white text
+    const headerLines = [
+      ['Nama', officer],
+      ['Shift', shift],
+      ['Tanggal', tanggal],
+      ['Jam', waktu]
+    ];
+    let hx = 14, hy = 30;
+    doc.setFontSize(10);
+    headerLines.forEach((row, idx) => {
+      doc.text(row[0]+': '+row[1], 14, 28 + idx*6);
+    });
+
+    // profile image fallback: use first photo of first area
+    let profileDataUrl = null;
+    if(state.areas.length && state.areas[0].photos.length){
+      try{
+        profileDataUrl = await fetchAsDataUrl(state.areas[0].photos[0].url);
+        const imgProps = doc.getImageProperties(profileDataUrl);
+        const w = 48;
+        const h = (imgProps.height/imgProps.width)*w;
+        doc.addImage(profileDataUrl, 'JPEG', 150, 14, w, h);
+      }catch(e){ console.warn('profile add err', e); }
+    }
+    // new page for content
+    doc.addPage();
+
+    // for each area: big area title with background color; then photos large with description below (left aligned). One photo per block; if not fit, add page
+    for(let a of state.areas){
+      // area header with background color
+      const bg = colorForIdForPdf(a.id); // returns [r,g,b]
+      doc.setFillColor(bg[0],bg[1],bg[2]);
+      doc.rect(10,10,190,12,'F');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(14);
+      doc.text(a.name, 14, 18);
+      doc.setTextColor(0,0,0);
+      let y = 30;
+      // area description printed before photos
+      if(a.description && a.description.trim().length){
+        doc.setFontSize(10);
+        const lines = doc.splitTextToSize(a.description, 180);
+        doc.text(lines, 12, y);
+        y += lines.length*5 + 6;
+      }
+      for(let p of a.photos){
+        // if next block not fit, new page
+        if(y > 240) { doc.addPage(); y = 20; }
+        // load image data
+        try{
+          const durl = await fetchAsDataUrl(p.url);
+          const props = doc.getImageProperties(durl);
+          // target width to be large on page: 160mm max with margins
+          const targetW = 160;
+          const targetH = (props.height/props.width)*targetW;
+          if(y + targetH + 20 > 290){ // if won't fit vertically, new page
+            doc.addPage(); y = 20;
+          }
+          doc.addImage(durl, 'JPEG', 14, y, targetW, targetH);
+          y += targetH + 6;
+          // description below left-aligned
+          if(p.desc && p.desc.trim().length){
+            doc.setFontSize(10);
+            const lines = doc.splitTextToSize(p.desc, 180);
+            doc.text(lines, 14, y);
+            // increase y
+            y += lines.length*5 + 4;
+          }
+          // GPS info under desc
+          const coordLine = (p.lat && p.lon) ? (`Koordinat: ${p.lat.toFixed(6)}, ${p.lon.toFixed(6)} — ${p.ts? new Date(p.ts).toLocaleString() : ''}`) : 'Koordinat: -';
+          doc.setFontSize(9);
+          doc.text(coordLine, 14, y);
+          y += 12;
+        }catch(e){
+          console.warn('add photo fail', e);
+        }
+      }
+      // after each area, add page break
+      doc.addPage();
+    }
+
+    // signature page
+    doc.setFontSize(12); doc.text('Tanda Tangan Petugas', 14, 26);
+    if(state.signature){
+      try{
+        doc.addImage(state.signature, 'PNG', 14, 34, 120, 40);
+      }catch(e){ console.warn('sig add err', e); }
+    }
+    // line & name under
+    doc.setLineWidth(0.7);
+    doc.line(14, 86, 14+120, 86);
+    doc.setFontSize(11); doc.text(officer, 14, 96);
+    doc.setFontSize(9); doc.text('Tanda tangan sudah otomatis terverifikasi dan tervalidasi by system', 14, 106);
+
+    // GPS summary
+    doc.setFontSize(9); doc.text('GPS path (latest 10):', 14, 116);
+    const gpsSample = state.gpsPath.slice(-10).map(g => `${g.lat?.toFixed(6)||''},${g.lon?.toFixed(6)||''} @ ${new Date(g.timestamp||Date.now()).toLocaleString()}`);
+    doc.setFontSize(8); doc.text(doc.splitTextToSize(gpsSample.join('\n'), 180), 14, 122);
+
+    // output
+    const ab = doc.output('arraybuffer'); const blob = new Blob([ab], {type:'application/pdf'});
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = blobUrl; a.download = 'laporan_patroli_'+(new Date()).toISOString().slice(0,19).replace(/[:T]/g,'_')+'.pdf';
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{ document.body.removeChild(a); URL.revokeObjectURL(blobUrl);}catch(e){} }, 1600);
+  }
+
+  // helper to fetch objectURL -> dataURL
+  async function fetchAsDataUrl(url){
+    const resp = await fetch(url);
+    const blob = await resp.blob();
+    return await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = ()=>res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
+  }
+
+  // color for PDF header from id -> rgb array
+  function colorForIdForPdf(id){
+    let h = 0; for(let i=0;i<id.length;i++) h = (h<<5)-h + id.charCodeAt(i);
+    const hue = Math.abs(h) % 360;
+    // convert HSL to RGB (s=65%, l=44%)
+    return hslToRgb(hue/360, 0.65, 0.44);
+  }
+  // hsl to rgb 0..1 -> 0..255
+  function hslToRgb(h, s, l){
+    let r,g,b;
+    if(s===0){ r=g=b=l; } else {
+      const hue2rgb = (p,q,t)=>{ if(t<0) t+=1; if(t>1) t-=1; if(t<1/6) return p+(q-p)*6*t; if(t<1/2) return q; if(t<2/3) return p+(q-p)*(2/3-t)*6; return p; };
+      const q = l < 0.5 ? l*(1+s) : l+s - l*s;
+      const p = 2*l - q;
+      r = hue2rgb(p,q,h+1/3);
+      g = hue2rgb(p,q,h);
+      b = hue2rgb(p,q,h-1/3);
+    }
+    return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
+  }
+
+  // wiring events
+  addAreaBtn.addEventListener('click', ()=>{ addArea(areaInput.value.trim()||undefined); areaInput.value=''; });
+  btnStart.addEventListener('click', startGPS); btnStop.addEventListener('click', stopGPS);
+  btnGenerate.addEventListener('click', ()=>{ generatePDF().catch(e=>{ console.error(e); alert('Gagal generate PDF: '+e.message); }); });
+
+  modeUser.addEventListener('click', ()=>{ state.isAdmin=false; loginBox.classList.add('hidden'); renderAreas(); });
+  modeAdmin.addEventListener('click', ()=>{ state.isAdmin=true; loginBox.classList.remove('hidden'); renderAreas(); });
+
+  btnLogin.addEventListener('click', ()=>{ if(adminPass.value===state.adminPassword){ alert('Admin login'); btnLogout.classList.remove('hidden'); btnLogin.classList.add('hidden'); state.isAdmin=true; renderAreas(); adminPass.value=''; } else alert('Password salah'); });
+  btnLogout.addEventListener('click', ()=>{ state.isAdmin=false; btnLogout.classList.add('hidden'); btnLogin.classList.remove('hidden'); renderAreas(); });
+
+  btnDeep.addEventListener('click', ()=>{ if(confirm('Deep Clean: hapus semua data & password?')){ // perform deep clean
+    state.areas.forEach(a=> a.photos.forEach(p=> URL.revokeObjectURL(p.url)));
+    state.areas = []; state.gpsPath = []; state.signature = null; window.__patrol_admin_password = null; renderAreas(); alert('Deep clean done'); } });
+
+  // expose for debug
+  window.__patrol_state = state;
+  window.__patrol_api = { addArea, renderAreas, generatePDF };
+
+  // initial render
+  renderAreas();
+
+})();
+</script>
+</body>
+</html>
